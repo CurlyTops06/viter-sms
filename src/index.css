@@ -1,0 +1,163 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: "Poppins";
+  src: url(/fonts/Poppins-Regular.woff2) format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Poppins";
+  src: url(/fonts/Poppins-Medium.woff2) format("woff2");
+  font-weight: 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Poppins";
+  src: url(/fonts/Poppins-SemiBold.woff2) format("woff2");
+  font-weight: 600;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Poppins";
+  src: url(/fonts/Poppins-Bold.woff2) format("woff2");
+  font-weight: 700;
+  font-display: swap;
+}
+
+@theme {
+  --font-poppins: "Poppins", sans-serif;
+
+  --animate-shake: shake 0.2s ease-in-out;
+  --animate-fadeIn: fadeIn 0.2s ease-in-out;
+  --animate-fadeOut: fadeOut 0.2s ease-in-out;
+  --animate-slideUp: slideUp 0.2s ease-in-out;
+  --animate-slideDown: slideDown 0.2s ease-in-out;
+  --animate-loading: loading 1.5s ease-in-out infinite;
+
+  @keyframes shake {
+    0% {
+      transform: translateX(0);
+    }
+    25% {
+      transform: translateX(2px);
+    }
+    50% {
+      transform: translateX(-2px);
+    }
+    75% {
+      transform: translateX(2px);
+    }
+    100% {
+      transform: translateX(0);
+    }
+  }
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  @keyframes fadeOut {
+    0% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+  @keyframes slideUp {
+    0% {
+      transform: translateY(10px);
+    }
+    100% {
+      transform: translateY(0px);
+    }
+  }
+  @keyframes {
+    0% {
+      transform: translateY(0px);
+    }
+    100% {
+      transform: translateY(10px);
+    }
+  }
+  @keyframes loading {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+}
+
+@layer base {
+  html {
+    @apply scroll-smooth scroll-p-16;
+  }
+  body {
+    @apply overflow-x-hidden font-poppins text-black/80 text-base bg-white  dark:bg-gray-900 dark:text-white/80;
+  }
+  .container {
+    @apply max-w-7xl w-full mx-auto px-4;
+  }
+  h1 {
+    @apply text-[clamp(2rem,6vw,3rem)] font-bold;
+  }
+  h2 {
+    @apply text-[clamp(1.5rem,5vw,2.5rem)] font-bold;
+  }
+  h3 {
+    @apply text-[clamp(1.25rem,4vw,2rem)] font-bold;
+  }
+  h4 {
+    @apply text-[clamp(1rem,3vw,1.75rem)] font-bold;
+  }
+  h5 {
+    @apply text-xl font-semibold;
+  }
+  h6 {
+    @apply text-lg font-semibold;
+  }
+  li {
+    @apply list-none;
+  }
+  p,
+  span,
+  small,
+  h6,
+  input,
+  label,
+  li {
+    @apply overflow-x-hidden font-poppins text-black/80 text-base;
+  }
+}
+@layer components {
+  .navItem {
+    @apply flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all duration-200;
+  }
+  .navItem.active {
+    @apply bg-blue-200 text-blue-700 border-l-4 border-l-blue-700;
+  }
+  .statusBadge {
+    @apply inline-block px-3 py-1 rounded-full text-xs font-semibold;
+  }
+  .statusActive {
+    @apply bg-green-100 text-green-800;
+  }
+  .statusPending {
+    @apply bg-yellow-100 text-yellow-800;
+  }
+  .statusInactive {
+    @apply bg-red-100 text-red-800;
+  }
+}
+
+@layer utilities {
+  .loading-bar::after {
+    @apply content-[''] absolute top-0 left-0 w-[180%] h-full bg-linear-to-r from-transparent via-[#eeeeee] to-transparent animate-loading;
+  }
+}
