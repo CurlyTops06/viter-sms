@@ -6,7 +6,7 @@ const ClassesCard = () => {
   return (
     <>
       {/* <!-- class sched --> */}
-      <div className="px-8 py-6 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+      <div className="px-8 py-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         {/* <!-- card --> */}
         {classes.map((classes) => (
           <div
@@ -14,7 +14,7 @@ const ClassesCard = () => {
             key={classes.id}
           >
             {/* <!-- grade and section --> */}
-            <div className="border-b px-5 py-4">
+            <div className="border-b border-black px-5 py-4">
               <p className="text-black/80 font-bold">{classes.gradeSection}</p>
             </div>
             {/* <!-- details and action --> */}

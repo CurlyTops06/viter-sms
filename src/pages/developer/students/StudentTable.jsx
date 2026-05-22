@@ -8,12 +8,14 @@ const studentColumns = [
     key: "name",
     header: "Name",
     render: (student) => (
-      <div className="flex items-center gap-3 text-black">
-        <span className="hidden xl:block">{student.id}.</span>
+      <div className=" items-center gap-3 text-black flex">
         <div className="size-8 bg-blue-100 rounded-full flex items-center justify-center">
           <FaUser className="text-blue-600 text-sm" />
         </div>
-        <p className="font-medium">{student.name}</p>
+        <div>
+          <p className="font-medium">{student.name}</p>
+          <p className="text-xs text-gray-500 xl:hidden">{student.studentId}</p>
+        </div>
       </div>
     ),
     mobileLabel: null,
@@ -22,7 +24,17 @@ const studentColumns = [
     key: "studentId",
     header: "Student ID",
     render: (student) => <p>{student.studentId}</p>,
-    mobileLabel: "Student ID",
+    mobileLabel: null,
+  },
+  {
+    key: "studentGradeSection",
+    header: "Grade & Section",
+    render: (student) => (
+      <p className="px-0 xl:px-2 py-1 text-sm xl:text-xs font-semibold rounded-lg xl:bg-blue-100 xl:text-blue-700 w-fit">
+        {student.gradeSection}
+      </p>
+    ),
+    mobileLabel: "Grade & Section",
   },
   {
     key: "status",

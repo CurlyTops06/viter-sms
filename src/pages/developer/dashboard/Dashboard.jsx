@@ -20,6 +20,9 @@ import { teachers } from "../teachers/teachersData";
 import { classes } from "../classes/classesData";
 import { Link } from "react-router-dom";
 import { devNavUrl, urlDeveloper } from "../../../functions/functions-general";
+import TableLoading from "../../../partials/TableLoading";
+import NoData from "../../../partials/NoData";
+import ServerError from "../../../partials/ServerError";
 
 const Dashboard = () => {
   useDocumentTitle("Dashboard | School Management System");
@@ -72,7 +75,7 @@ const Dashboard = () => {
 
             <div className="px-8 py-6">
               <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-                <div className="p-4 md:px-6 md:py-5 border-b border-gray-100 flex justify-between items-center">
+                <div className="p-4 md:px-6 md:py-5 border-b border-black  flex justify-between items-center">
                   <div>
                     <h3 className="flex items-center text-lg font-semibold text-gray-800">
                       <FaUsers className="text-blue-500 mr-2" />
@@ -90,6 +93,9 @@ const Dashboard = () => {
                   </Link>
                 </div>
                 <StudentTable students={students.slice(0, 5)} />
+                <TableLoading count={20} cols={10} />
+                <NoData />
+                <ServerError />
               </div>
             </div>
           </>

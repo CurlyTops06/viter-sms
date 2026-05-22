@@ -8,22 +8,13 @@ const TeacherColumns = [
     key: "name",
     header: "Name",
     render: (teacher) => (
-      <div className="flex items-center gap-3">
-        <span className="hidden xl:block">{teacher.id}.</span>
-        <div className="size-8 bg-blue-100 rounded-full items-center justify-center hidden xl:flex">
-          <span className="text-blue-600 text-sm">
-            <FaUser />
-          </span>
+      <div className=" items-center gap-3 text-black flex">
+        <div className="size-8 bg-blue-100 rounded-full flex items-center justify-center">
+          <FaUser className="text-blue-600 text-sm" />
         </div>
-        <p className="font-medium hidden xl:flex">{teacher.name}</p>
-        <div className="size-10 bg-blue-100 rounded-full flex items-center justify-center xl:hidden">
-          <span className="text-blue-600 text-sm">
-            <FaUser />
-          </span>
-        </div>
-        <div className="xl:hidden">
-          <p className="font-semibold text-gray-800">{teacher.name}</p>
-          <p className="text-xs text-gray-500">{teacher.subject}</p>
+        <div>
+          <p className="font-medium">{teacher.name}</p>
+          <p className="text-xs text-gray-500 xl:hidden">{teacher.subject}</p>
         </div>
       </div>
     ),

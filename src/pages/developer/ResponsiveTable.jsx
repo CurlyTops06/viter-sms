@@ -14,7 +14,7 @@ const ResponsiveTable = ({ data, columns }) => {
       {/* Desktop table */}
       <div className="hidden xl:block overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-gray-50">
+          <thead className="bg-gray-50 border-b border-black">
             <tr>
               {columns.map((col) => (
                 <th
