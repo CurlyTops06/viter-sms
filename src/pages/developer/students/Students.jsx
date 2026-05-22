@@ -25,17 +25,14 @@ const Students = () => {
                   <FaPlus /> Add Student
                 </button>
               </div>
-
               {/* List of Students */}
-              <div>
-                <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-                  <StudentTable students={students} />
-                  {/* Total */}
-                  <div className="px-6 py-4 bg-gray-50 border-t flex justify-between">
-                    <span className="text-sm text-gray-600">
-                      {students.length} students
-                    </span>
-                  </div>
+              <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+                <StudentTable students={students} />
+                {/* Total */}
+                <div className="px-6 py-4 bg-gray-100 border-t flex justify-between">
+                  <span className="text-sm text-gray-600">
+                    {students.length} students
+                  </span>
                 </div>
               </div>
             </div>

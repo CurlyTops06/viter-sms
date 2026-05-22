@@ -26,7 +26,14 @@ const Teachers = () => {
                 </button>
               </div>
               {/* List of Teachers */}
-              <TeacherTable teachers={teachers} />
+              <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+                <TeacherTable teachers={teachers} />
+                <div className="px-6 py-4 bg-gray-100 border-t flex justify-between">
+                  <span className="text-sm text-gray-600">
+                    {teachers.length} teachers
+                  </span>
+                </div>
+              </div>
             </div>
           </>
         )}

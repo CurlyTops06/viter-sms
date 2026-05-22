@@ -18,6 +18,8 @@ import StudentTable from "../students/StudentTable";
 import { students } from "../students/studentsData";
 import { teachers } from "../teachers/teachersData";
 import { classes } from "../classes/classesData";
+import { Link } from "react-router-dom";
+import { devNavUrl, urlDeveloper } from "../../../functions/functions-general";
 
 const Dashboard = () => {
   useDocumentTitle("Dashboard | School Management System");
@@ -29,6 +31,7 @@ const Dashboard = () => {
       trendLabel: "+12% from last month",
       icon: <FaUserGraduate />,
       color: "blue",
+      loc: "students",
     },
     {
       title: "Total Teachers",
@@ -37,6 +40,7 @@ const Dashboard = () => {
       trendLabel: "+2% new this year",
       icon: <FaChalkboardUser />,
       color: "green",
+      loc: "teachers",
     },
     {
       title: "Total Classes",
@@ -45,6 +49,7 @@ const Dashboard = () => {
       trendLabel: "Grade 7 to Grade 12",
       icon: <FaSchool />,
       color: "purple",
+      loc: "classes",
     },
   ];
 
@@ -59,7 +64,7 @@ const Dashboard = () => {
               onToggle={onToggle}
             />
             {/* Cards */}
-            <div className="px-8 py-6 grid grid-cols-1 xl:grid-cols-3 gap-6">
+            <div className="px-8 py-6 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
               {stats.map((stat) => (
                 <StatCard key={stat.title} {...stat} />
               ))}
@@ -77,14 +82,14 @@ const Dashboard = () => {
                       Latest 5 students added to the system
                     </p>
                   </div>
-                  <a
-                    href="./students.html"
+                  <Link
+                    to={`${devNavUrl}/${urlDeveloper}/students`}
                     className="flex items-center text-blue-600 hover:text-blue-700 text-sm font-medium transition"
                   >
                     View All <FaArrowRight className="ml-1" />
-                  </a>
+                  </Link>
                 </div>
-                <StudentTable students={students} />
+                <StudentTable students={students.slice(0, 5)} />
               </div>
             </div>
           </>

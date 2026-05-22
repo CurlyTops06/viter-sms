@@ -32,6 +32,13 @@ export const teachers = [
     name: "Mrs. Lisa Wong",
     subject: "Chemistry",
     email: "lisa.w@schoolms.com",
-    status: "Active",
+    status: "Inactive",
+  },
+  {
+    id: 6,
+    name: "Mrs. Lisa Wong",
+    subject: "Chemistry",
+    email: "lisa.w@schoolms.com",
+    status: "Pending",
   },
 ];

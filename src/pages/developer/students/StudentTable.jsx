@@ -9,7 +9,7 @@ const studentColumns = [
     header: "Name",
     render: (student) => (
       <div className="flex items-center gap-3 text-black">
-        {student.id}.
+        <span className="hidden xl:block">{student.id}.</span>
         <div className="size-8 bg-blue-100 rounded-full flex items-center justify-center">
           <FaUser className="text-blue-600 text-sm" />
         </div>
