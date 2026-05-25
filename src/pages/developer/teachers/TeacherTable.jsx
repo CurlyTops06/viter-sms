@@ -9,6 +9,7 @@ const TeacherColumns = [
     header: "Name",
     render: (teacher) => (
       <div className=" items-center gap-3 text-black flex">
+        <div className="hidden xl:block">{teacher.id}.</div>
         <div className="size-8 bg-blue-100 rounded-full flex items-center justify-center">
           <FaUser className="text-blue-600 text-sm" />
         </div>
