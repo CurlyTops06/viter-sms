@@ -1,22 +1,13 @@
-import { VscBracketError } from "react-icons/vsc";
+import React from "react";
+import { TbWorldCog } from "react-icons/tb";
 
-const ServerError = ({ iconSize, textSize }) => {
-  let icon =
-    iconSize === null || iconSize === undefined
-      ? "text-7xl"
-      : `${`text-${iconSize}`}`;
-  let text =
-    textSize === null || textSize === undefined
-      ? "text-2xl"
-      : `${`text-${textSize}`}`;
+const ServerError = () => {
   return (
     <>
       <div className="flex justify-center items-center flex-col p-2">
-        <span className={`${`${icon} text-gray-400`}`}>
-          <VscBracketError />
-        </span>
-        <span className={`${`font-bold text-gray-300 ${text}`}`}>
-          Server Error
+        <TbWorldCog className="h-14 w-14 text-gray-300" />
+        <span className=" text-gray-300 text-xl">
+          Server Error / API Network Error
         </span>
       </div>
     </>

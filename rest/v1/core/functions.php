@@ -16,6 +16,7 @@ function checkDbConnection()
 
 function checkQuery($query, $msg)
 {
+    // IF ! is present it pertains to false
     if (!$query) returnHandleError($msg);
 }
 
@@ -66,7 +67,7 @@ function returnSuccess($object, $name, $query, $data = null)
     $returnData = [];
     $returnData['data'] = $data;
     $returnData['count'] = $query->rowCount();
-    $returnData["{$name} ID"] = $object->lastInsertedId();
+    $returnData["{$name} ID"] = $object->lastInsertedId;
     $returnData['success'] = true;
     $returnData['server_date'] = date("Y-m-d");
     $response->setData($returnData);
@@ -77,7 +78,7 @@ function returnSuccess($object, $name, $query, $data = null)
 // This function will retrieve all data
 function getResultData($query)
 {
-    $data = $query->fetchAll();
+    $data = $query->fetchAll(PDO::FETCH_ASSOC);
     return $data;
 }
 
@@ -129,4 +130,22 @@ function sendResponse($result)
     // If this is declared in the function, it will stop reading the code in the function instead it will send data
     // return
     // if none is declared undefined
+}
+
+function checkAccess()
+{
+    returnHandleError('Forbidden Access.', 'Invalid Request', '', '401');
+}
+
+
+function checkEndpoint()
+{
+    returnHandleError('Endpoint not Found.', 'Invalid Request', '', '404');
+}
+
+
+function checkId($id)
+{
+    if (!$id || !is_numeric($id))
+        returnHandleError('Invalid ID.', 'Invalid Request', '', '402');
 }

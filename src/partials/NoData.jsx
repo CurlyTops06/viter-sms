@@ -1,14 +1,12 @@
 import React from "react";
-import { FaFolderOpen } from "react-icons/fa";
+import { FaRegFolder } from "react-icons/fa6";
 
-const NoData = ({ text = "No Data" }) => {
+const NoData = ({ text = "No data" }) => {
   return (
     <>
-      <div className="flex justify-center items-center flex-col p-2">
-        <span className="text-7xl text-gray-400">
-          <FaFolderOpen />
-        </span>
-        <span className="font-bold text-gray-300 text-2xl">{text}</span>
+      <div className="flex justify-center items-center flex-col pt-2">
+        <FaRegFolder className="h-14 w-14 text-gray-300" />
+        <span className=" text-gray-300 text-xl">{text}</span>
       </div>
     </>
   );

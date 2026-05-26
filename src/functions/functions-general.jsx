@@ -1,6 +1,6 @@
 import React from "react";
 
-export const urlPath = "http://localhost/react-vite/viter-sms";
+export const urlPath = "http://localhost/react-vite2/viter-sms";
 export const devApiUrl = urlPath + "/rest";
 export const devNavUrl = "";
 export const apiVersion = "/v1";

@@ -27,7 +27,8 @@
 
 @theme {
   --font-poppins: "Poppins", sans-serif;
-
+  --color-primary: #1965fd;
+  --color-dark: #333333;
   --animate-shake: shake 0.2s ease-in-out;
   --animate-fadeIn: fadeIn 0.2s ease-in-out;
   --animate-fadeOut: fadeOut 0.2s ease-in-out;
@@ -134,6 +135,59 @@
   li {
     @apply overflow-x-hidden font-poppins text-black/80 text-base;
   }
+  input,
+  select {
+    @apply h-[35px] border border-solid border-gray-300 p-2 rounded-lg w-full truncate bg-transparent outline-none;
+  }
+  select {
+    @apply text-xs h-[35px];
+  }
+  textarea {
+    @apply block border border-solid border-gray-300 p-2 rounded-lg w-full h-28 bg-transparent outline-none;
+  }
+  label {
+    @apply text-xs text-primary transform -translate-y-6 -translate-x-1 absolute left-3 top-4 px-1  z-10 isolate;
+  }
+  label:after {
+    @apply content-[''] w-[97%] h-[2.5px] absolute left-px top-[7.2px] bg-white -z-10;
+  }
+  input:disabled,
+  select:disabled,
+  textarea:disabled,
+  :disabled {
+    @apply bg-gray-100 border-gray-200 cursor-not-allowed hover:bg-gray-100 hover:text-inherit hover:border-gray-200;
+  }
+  input::file-selector-button {
+    @apply mr-5 border-0 bg-primary disabled:bg-gray-200 rounded-md text-white cursor-pointer px-1 py-0;
+  }
+  input:focus,
+  select:focus,
+  textarea:focus {
+    @apply border border-solid border-primary outline-0;
+  }
+  span.error-show {
+    @apply text-[11px] absolute right-1 -bottom-5 text-red-500 italic z-10;
+  }
+  input.error-show,
+  select.error-show,
+  textarea.error-show {
+    @apply border border-red-500 animate-shake;
+  }
+  label.error-show {
+    @apply text-red-500;
+  }
+  .tooltip-action {
+    @apply relative p-1 bg-transparent leading-none;
+  }
+  .tooltip-action::after {
+    @apply content-[attr(data-tooltip)] z-51! absolute -translate-x-2/4 bottom-full -top-[24px] bg-dark/80 text-white p-1 rounded-sm h-fit leading-none whitespace-nowrap text-center opacity-0 text-[10px] pointer-events-none transition ease-linear scale-0 duration-75 left-1/2;
+  }
+  .tooltip-action:hover::after {
+    @apply opacity-100 scale-100;
+  }
+  button {
+    @apply cursor-pointer outline-0;
+  }
 }
 @layer components {
   .navItem {
@@ -153,6 +207,40 @@
   }
   .statusInactive {
     @apply bg-red-100 text-red-800;
+  }
+  .modal-action {
+    @apply flex justify-end w-full -bottom-5 mt-6 mb-4 gap-2 left-0 bg-white z-20;
+  }
+  .btn-modal-submit {
+    @apply flex items-center justify-center text-white gap-2 px-3 py-1.5 bg-primary rounded-md border-primary border hover:bg-white hover:text-primary hover:border-gray-300 duration-300 ease-in w-full;
+  }
+  .btn-modal-submit:disabled {
+    @apply opacity-50 hover:bg-primary hover:text-white hover:border-primary;
+  }
+  .btn-modal-cancel {
+    @apply flex items-center justify-center text-dark gap-2 px-3 py-1.5 bg-white rounded-md border-gray-300 border w-full;
+  }
+  .btn-modal-cancel:disabled {
+    @apply opacity-50 hover:bg-white hover:text-dark hover:border-gray-300;
+  }
+  .modal-body {
+    @apply h-[calc(100dvh-50px)];
+  }
+  .modal-form-container {
+    @apply h-full flex flex-col justify-between overflow-y-auto px-3;
+  }
+  /* MAKE LAST BACKDROP TO SHOW BG OVERLAY */
+  .modal__wrapper,
+  .backdrop:last-of-type {
+    /* @apply last-of-type:bg-dark/30; */
+    @apply bg-dark/30;
+  }
+  .backdrop:last {
+    @apply last:bg-dark/30;
+  }
+
+  .modal-container {
+    @apply mt-0;
   }
 }
 

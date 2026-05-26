@@ -40,7 +40,12 @@ const Students = () => {
               </div>
               {/* List of Students */}
               <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-                <StudentTable students={students} />
+                <StudentTable
+                  students={students}
+                  setIsOpen={setIsOpen}
+                  itemEdit={itemEdit}
+                  setItemEdit={setItemEdit}
+                />
                 {/* Total */}
                 <div className="px-6 py-4 bg-gray-100 border-t border-black flex justify-between">
                   <span className="text-sm text-gray-600">
