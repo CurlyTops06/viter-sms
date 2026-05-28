@@ -30,6 +30,12 @@ if (isset($_SERVER['HTTP_AUTHORIZATION'])) {
         sendResponse($result);
         exit;
     }
+    // DELETE == DELETE A RECORD
+    if ($_SERVER['REQUEST_METHOD'] == "DELETE") {
+        $result = require 'delete.php';
+        sendResponse($result);
+        exit;
+    }
 }
 
 // THis is to prevent white page

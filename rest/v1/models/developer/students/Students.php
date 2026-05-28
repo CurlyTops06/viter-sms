@@ -74,8 +74,26 @@ class Students
             $sql .= "* ";
             $sql .= "from {$this->tblStudents} ";
             $sql .= "order by ";
-            $sql .= "students_first_name, ";
-            $sql .= "students_last_name ";
+            // $sql .= "students_first_name, ";
+            // $sql .= "students_last_name ";
+            $sql .= "students_aid ";
+            $query = $this->connection->query($sql);
+        } catch (PDOException $e) {
+            $query = false;
+        }
+        return $query;
+    }
+    public function read5()
+    {
+        try {
+            $sql = "select ";
+            $sql .= "* ";
+            $sql .= "from {$this->tblStudents} ";
+            $sql .= "order by ";
+            // $sql .= "students_first_name, ";
+            // $sql .= "students_last_name ";
+            $sql .= "students_aid ";
+            $sql .= "limit 5 ";
             $query = $this->connection->query($sql);
         } catch (PDOException $e) {
             $query = false;
@@ -121,6 +139,40 @@ class Students
                 'students_grade' => $this->students_grade,
                 'students_section' => $this->students_section,
                 'students_updated' => $this->students_updated,
+                'students_aid' => $this->students_aid,
+            ]);
+        } catch (PDOException $e) {
+            $query = false;
+        }
+        return $query;
+    }
+
+    public function active()
+    {
+        try {
+            $sql = "update {$this->tblStudents} set ";
+            $sql .= "students_is_active =:students_is_active, ";
+            $sql .= "students_updated =:students_updated ";
+            $sql .= "where students_aid = :students_aid ";
+            $query = $this->connection->prepare($sql);
+            $query->execute([
+                'students_is_active' => $this->students_is_active,
+                'students_updated' => $this->students_updated,
+                'students_aid' => $this->students_aid,
+            ]);
+        } catch (PDOException $e) {
+            $query = false;
+        }
+        return $query;
+    }
+
+    public function delete()
+    {
+        try {
+            $sql = "delete from {$this->tblStudents} ";
+            $sql .= "where students_aid = :students_aid ";
+            $query = $this->connection->prepare($sql);
+            $query->execute([
                 'students_aid' => $this->students_aid,
             ]);
         } catch (PDOException $e) {

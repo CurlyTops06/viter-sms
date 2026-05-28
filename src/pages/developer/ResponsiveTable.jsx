@@ -1,15 +1,27 @@
+import { apiVersion } from "@/functions/functions-general";
+import ModalArchive from "../../partials/modal/ModalArchive";
 import NoData from "../../partials/NoData";
 import ServerError from "../../partials/ServerError";
 import FetchingSpinner from "../../partials/spinners/FetchingSpinner";
 import TableLoading from "../../partials/TableLoading";
+import { StoreContext } from "../../store/StoreContext";
+import React from "react";
+import ModalRestore from "@/partials/modal/ModalRestore";
+import ModalDelete from "@/partials/modal/ModalDelete";
 
 const ResponsiveTable = ({
   data,
   columns,
+  pathUrl = "", //to update the statuses and delete api route url
   isLoading = false,
   isFetching = false,
   error = false,
+  dataItem = {},
+  queryKey = "", //string or array
 }) => {
+  const { store, dispatch } = React.useContext(StoreContext);
+  const deletePathUrl = pathUrl.split("/");
+  const deleteLastIndex = deletePathUrl[deletePathUrl.length - 1];
   const mainCol = columns.find((c) => c.mobileLabel === null);
   const topRightCol = columns.find((c) => c.mobilePosition === "topRight");
   const bodyColumns = columns.filter(
@@ -64,7 +76,7 @@ const ResponsiveTable = ({
                 <tr key={row.id}>
                   {columns.map((col) => (
                     <td key={col.key} className="px-6 py-4">
-                      {col.render(row)}
+                      {col.render(row, key)}
                     </td>
                   ))}
                 </tr>
@@ -113,6 +125,38 @@ const ResponsiveTable = ({
           ))
         )}
       </div>
+
+      {/* Action Event */}
+      {/* Archive */}
+      {store.isArchive && (
+        <ModalArchive
+          endpoint={`${apiVersion}/${pathUrl}/active.php?id=${dataItem?.id ?? "0"}`}
+          msg={`Are you sure you want to archive this record`}
+          successMsg={`Successfully archived.`}
+          item={dataItem}
+          queryKey={queryKey}
+        />
+      )}
+      {/* Restore */}
+      {store.isRestore && (
+        <ModalRestore
+          endpoint={`${apiVersion}/${pathUrl}/active.php?id=${dataItem?.id ?? "0"}`}
+          msg={`Are you sure you want to restore this record`}
+          successMsg={`Successfully restored.`}
+          item={dataItem}
+          queryKey={queryKey}
+        />
+      )}
+      {/* Delete */}
+      {store.isDelete && (
+        <ModalDelete
+          endpoint={`${apiVersion}/${pathUrl}/${deleteLastIndex}.php?id=${dataItem?.id ?? "0"}`}
+          msg={`Are you sure you want to delete this record`}
+          successMsg={`Successfully deleted.`}
+          item={dataItem}
+          queryKey={queryKey}
+        />
+      )}
     </>
   );
 };

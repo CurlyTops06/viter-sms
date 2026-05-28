@@ -60,6 +60,14 @@ function checkDelete($object)
     return $query;
 }
 
+// object is the file in models directory
+function checkActive($object)
+{
+    $query = $object->active();
+    checkQuery($query, "There's a problem processing your request. (active)");
+    return $query;
+}
+
 // This function return success if updates in the database is successful
 function returnSuccess($object, $name, $query, $data = null)
 {

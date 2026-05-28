@@ -1,35 +1,50 @@
 import React from "react";
-import Layout from "../Layout";
-import Navigation from "../../../partials/Navigation";
-import Header from "../../../partials/Header";
-import StatCard from "./StatCard";
 import {
   FaArrowRight,
-  FaEdit,
   FaSchool,
-  FaUser,
   FaUserGraduate,
   FaUsers,
-  FaTrash,
 } from "react-icons/fa";
 import { FaChalkboardUser } from "react-icons/fa6";
-import useDocumentTitle from "../../../functions/custom-hooks/useDocumentTitle";
-import StudentTable from "../students/StudentTable";
-import { students } from "../students/studentsData";
-import { teachers } from "../teachers/teachersData";
-import { classes } from "../classes/classesData";
 import { Link } from "react-router-dom";
-import { devNavUrl, urlDeveloper } from "../../../functions/functions-general";
-import TableLoading from "../../../partials/TableLoading";
-import NoData from "../../../partials/NoData";
-import ServerError from "../../../partials/ServerError";
+import useDocumentTitle from "../../../functions/custom-hooks/useDocumentTitle";
+import useQueryData from "../../../functions/custom-hooks/useQueryData";
+import {
+  apiVersion,
+  devNavUrl,
+  urlDeveloper,
+} from "../../../functions/functions-general";
+import Header from "../../../partials/Header";
+import Layout from "../Layout";
+import { classes } from "../classes/classesData";
+import StudentTable from "../students/StudentTable";
+import StatCard from "./StatCard";
+
+export const handleAction = (setIsOpen, setItemEdit, item) => {
+  setIsOpen(true);
+  setItemEdit(item);
+};
 
 const Dashboard = () => {
   useDocumentTitle("Dashboard | School Management System");
+  const [itemEdit, setItemEdit] = React.useState(null);
+
+  const { data: dataStudents } = useQueryData(
+    `${apiVersion}/controllers/developer/students/students.php`,
+    "get", //method
+    "students", //key
+  );
+  const studentArray = dataStudents?.data.length ?? [];
+  const { data: dataTeachers } = useQueryData(
+    `${apiVersion}/controllers/developer/teachers/teachers.php`,
+    "get", //method
+    "teachers", //key
+  );
+  const teacherArray = dataTeachers?.data.length ?? [];
   const stats = [
     {
       title: "Total Students",
-      value: students.length,
+      value: studentArray,
       trend: true,
       trendLabel: "+12% from last month",
       icon: <FaUserGraduate />,
@@ -38,7 +53,7 @@ const Dashboard = () => {
     },
     {
       title: "Total Teachers",
-      value: teachers.length,
+      value: teacherArray,
       trend: true,
       trendLabel: "+2% new this year",
       icon: <FaChalkboardUser />,
@@ -92,10 +107,10 @@ const Dashboard = () => {
                     View All <FaArrowRight className="ml-1" />
                   </Link>
                 </div>
-                <StudentTable students={students.slice(0, 5)} />
-                <TableLoading count={20} cols={10} />
+                <StudentTable itemEdit={itemEdit} setItemEdit={setItemEdit} />
+                {/* <TableLoading count={20} cols={10} />
                 <NoData />
-                <ServerError />
+                <ServerError /> */}
               </div>
             </div>
           </>

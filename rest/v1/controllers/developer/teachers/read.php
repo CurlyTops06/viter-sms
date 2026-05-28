@@ -4,13 +4,13 @@
 $conn = null;
 $conn = checkDbConnection();
 // use models
-$val = new Students($conn);
+$val = new Teachers($conn);
 
 // students?id=12
 // This is for request with specific ID
 if (array_key_exists('id', $_GET)) {
-    $val->students_aid = $_GET['id'];
-    checkId($val->students_aid);
+    $val->teachers_aid = $_GET['id'];
+    checkId($val->teachers_aid);
     $query = checkReadById($val);
     http_response_code(200);
     getResultData($query);

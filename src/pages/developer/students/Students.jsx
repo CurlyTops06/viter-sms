@@ -1,22 +1,21 @@
+import React from "react";
 import { FaPlus } from "react-icons/fa";
 import useDocumentTitle from "../../../functions/custom-hooks/useDocumentTitle";
 import Header from "../../../partials/Header";
+import { setIsAdd } from "../../../store/StoreAction";
+import { StoreContext } from "../../../store/StoreContext";
 import Layout from "../Layout";
-import StudentTable from "./StudentTable";
-import { students } from "./studentsData";
-import React from "react";
 import ModalAddStudents from "./ModalAddStudents";
+import StudentTable from "./StudentTable";
 
+export const handleAction = (setIsOpen, setItemEdit, item) => {
+  setIsOpen(true);
+  setItemEdit(item);
+};
 const Students = () => {
-  const [isOpen, setIsOpen] = React.useState(false);
-  const [itemEdit, setItemEdit] = React.useState(null);
-
-  const handleAdd = () => {
-    setItemEdit(null);
-    setIsOpen(true);
-  };
-
   useDocumentTitle("Students | School Management System");
+  const { store, dispatch } = React.useContext(StoreContext);
+  const [itemEdit, setItemEdit] = React.useState(null);
 
   return (
     <>
@@ -33,31 +32,31 @@ const Students = () => {
               <div className="flex justify-end items-center mb-6">
                 <button
                   className="bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold px-5 py-2.5 rounded-xl shadow-md transition-all flex items-center gap-2"
-                  onClick={handleAdd}
+                  onClick={() =>
+                    handleAction(
+                      (val) => dispatch(setIsAdd(val)),
+                      setItemEdit,
+                      null,
+                    )
+                  }
                 >
                   <FaPlus /> Add Student
                 </button>
               </div>
               {/* List of Students */}
               <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-                <StudentTable
-                  students={students}
-                  setIsOpen={setIsOpen}
-                  itemEdit={itemEdit}
-                  setItemEdit={setItemEdit}
-                />
-                {/* Total */}
-                <div className="px-6 py-4 bg-gray-100 border-t border-black flex justify-between">
-                  <span className="text-sm text-gray-600">
-                    {students.length} students
-                  </span>
-                </div>
+                <StudentTable itemEdit={itemEdit} setItemEdit={setItemEdit} />
               </div>
             </div>
           </>
         )}
       </Layout>
-      {isOpen && <ModalAddStudents itemEdit={itemEdit} setIsOpen={setIsOpen} />}
+      {store.isAdd && (
+        <ModalAddStudents
+          itemEdit={itemEdit}
+          setIsOpen={(val) => dispatch(setIsAdd(val))}
+        />
+      )}
     </>
   );
 };

@@ -1,4 +1,4 @@
-import { setError, setMessage } from "@/store/StoreAction";
+import { setIsError, setMessage } from "@/store/StoreAction";
 import { StoreContext } from "@/store/StoreContext";
 import React from "react";
 import { FaTimes } from "react-icons/fa";
@@ -11,7 +11,7 @@ const MessageError = () => {
   const ref = React.useRef(null);
 
   const handleClose = () => {
-    dispatch(setError(false));
+    dispatch(setIsError(false));
   };
 
   // React.useEffect(() => {
