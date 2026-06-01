@@ -25,8 +25,7 @@ const TeacherColumns = [
     header: "Name",
     render: (teacher, key) => (
       <div className=" items-center gap-3 text-black flex">
-        {console.log(key++)}
-        <div className="hidden xl:block">{key}.</div>
+        <div className="hidden xl:block">{key + 1}.</div>
         <div className="size-8 bg-blue-100 rounded-full flex items-center justify-center">
           <FaUser className="text-blue-600 text-sm" />
         </div>
@@ -148,7 +147,7 @@ const TeacherTable = ({ itemEdit, setItemEdit }) => {
       return {
         ...item,
         id: item.teachers_aid,
-        name: `${item.teachers_first_name} ${item.teachers_last_name}`,
+        name: `${item.teachers_honorific} ${item.teachers_first_name} ${item.teachers_last_name}`,
         subject: `${item.teachers_subject}`,
         email: `${item.teachers_email}`,
         status: item.teachers_is_active ? "Active" : "Inactive",
@@ -162,6 +161,8 @@ const TeacherTable = ({ itemEdit, setItemEdit }) => {
 
   return (
     <>
+      
+      {/* Table */}
       <ResponsiveTable
         isLoading={isLoadingTeachers}
         isFetching={isFetchingTeachers}

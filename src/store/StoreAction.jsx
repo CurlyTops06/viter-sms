@@ -35,6 +35,12 @@ export const setIsDelete = (val) => {
     payload: val, //set the new value
   };
 };
+export const setIsSearch = (val) => {
+  return {
+    type: "IS_SEARCH", //TO used as key to store reducer file
+    payload: val, //set the new value
+  };
+};
 export const setMessage = (val) => {
   return {
     type: "MESSAGE", //TO used as key to store reducer file

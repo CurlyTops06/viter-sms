@@ -8,6 +8,7 @@ const initVal = {
   isArchive: false, // store boolean value to show archive modal
   isRestore: false, // store boolean value to show Restore modal
   isDelete: false, // store boolean value to show Delete modal
+  isSearch: false, // store boolean value to show Search modal
   message: "", // store string value to show error message
 };
 

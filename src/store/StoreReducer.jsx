@@ -30,6 +30,11 @@ export const StoreReducer = (state, action) => {
         ...state, //Store all INITVAL
         isDelete: action.payload, //overwrite the value
       };
+    case "IS_SEARCH":
+      return {
+        ...state, //Store all INITVAL
+        isSearch: action.payload, //overwrite the value
+      };
     case "MESSAGE":
       return {
         ...state, //Store all INITVAL

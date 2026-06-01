@@ -1,72 +1,78 @@
 import { queryData } from "@/functions/custom-hooks/queryData";
-import { InputSelect, InputText } from "@/functions/FormInputs";
+import { InputText } from "@/functions/FormInputs";
 import { apiVersion } from "@/functions/functions-general";
 import ModalWrapperSide from "@/partials/modal/ModalWrapperSide";
 import ButtonSpinner from "@/partials/spinners/ButtonSpinner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Form, Formik } from "formik";
-import * as Yup from "yup";
+import { Formik, Form } from "formik";
 import React from "react";
 import { FaTimesCircle } from "react-icons/fa";
+import * as Yup from "yup";
 
-const ModalAddTeachers = ({ itemEdit, setIsOpen }) => {
+const ModalAddClasses = ({ itemEdit, setIsOpen }) => {
   const [animate, setAnimate] = React.useState("translate-x-full");
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: async (values) =>
       queryData(
         itemEdit
-          ? `${apiVersion}/controllers/developer/teachers/teachers.php?id=${itemEdit.teachers_aid}`
-          : `${apiVersion}/controllers/developer/teachers/teachers.php`,
-        itemEdit ? "put" : "post",
-        values,
+          ? `${apiVersion}/controllers/developer/classes/classes.php?id=${itemEdit.classes_aid}` //Update Api Path
+          : `${apiVersion}/controllers/developer/classes/classes.php`,
+        itemEdit ? "put" : "post", // Post = Create
+        values, //The data to be sent
       ),
     onSuccess: (data) => {
       if (data.success) {
+        // If success show the message
         alert(`Successfully ${itemEdit ? "updated" : "added"}.`);
         setIsOpen(false);
       } else {
+        // If this is error alert/show the error msg
         alert(data.error);
       }
-      queryClient.invalidateQueries({ queryKey: ["teachers"] });
+      //This is to refetch the data after update or create
+      queryClient.invalidateQueries({ queryKey: ["classes"] });
     },
   });
 
+  // THis is for the initial values in the modal
   const initVal = {
-    teachers_honorific: itemEdit ? itemEdit.teachers_honorific : "",
-    teachers_first_name: itemEdit ? itemEdit.teachers_first_name : "",
-    teachers_middle_name: itemEdit ? itemEdit.teachers_middle_name : "",
-    teachers_last_name: itemEdit ? itemEdit.teachers_last_name : "",
-    teachers_subject: itemEdit ? itemEdit.teachers_subject : "",
-    teachers_email: itemEdit ? itemEdit.teachers_email : "",
+    classes_grade: itemEdit ? itemEdit.classes_grade : "",
+    classes_section: itemEdit ? itemEdit.classes_section : "",
+    classes_adviser: itemEdit ? itemEdit.classes_adviser : "",
+    classes_number_students: itemEdit ? itemEdit.classes_number_students : "",
   };
-
+  // This is for the validation in the form field
   const yupSchema = Yup.object({
-    teachers_honorific: Yup.string().trim().required("Required."),
-    teachers_first_name: Yup.string().trim().required("Required."),
-    teachers_middle_name: Yup.string().trim().required("Required."),
-    teachers_last_name: Yup.string().trim().required("Required."),
-    teachers_email: Yup.string().trim().required("Required."),
-    teachers_subject: Yup.string().trim().required("Required."),
+    classes_grade: Yup.string().trim().required("Required."),
+    classes_section: Yup.string().trim().required("Required."),
+    classes_adviser: Yup.string().trim().required("Required."),
+    classes_number_students: Yup.string().trim().required("Required."),
   });
 
+  //   THis is the function to close the modal
   const handleClose = () => {
+    // if updating is pending don't close the modal
     if (mutation.isPending) return;
+    // animate the modal
     setAnimate("translate-x-full");
+    // delay and close the modal
     setTimeout(() => {
       setIsOpen(false);
     }, 200);
   };
 
   React.useEffect(() => {
+    // animate the modal entrance
     setAnimate("");
   }, []);
+
   return (
     <>
       <ModalWrapperSide handleClose={handleClose} className={`${animate}`}>
         <div className="flex justify-between mb-4  px-3 pt-2">
           <h3 className="text-black/80 font-medium text-sm">
-            {itemEdit ? "Update" : "Add"} Teacher
+            {itemEdit ? "Update" : "Add"} Classes
           </h3>
           <button
             className=" text-black/50 cursor-pointer"
@@ -92,43 +98,29 @@ const ModalAddTeachers = ({ itemEdit, setIsOpen }) => {
                     <div className="modal-container">
                       <div className="relative mb-6">
                         <InputText
-                          label="Honorific"
-                          name="teachers_honorific"
+                          label="Classes Grade"
+                          name="classes_grade"
                           disabled={mutation.isPending}
                         />
                       </div>
                       <div className="relative mb-6">
                         <InputText
-                          label="First Name"
-                          name="teachers_first_name"
+                          label="Classes Section"
+                          name="classes_section"
                           disabled={mutation.isPending}
                         />
                       </div>
                       <div className="relative mb-6">
                         <InputText
-                          label="Middle Name"
-                          name="teachers_middle_name"
+                          label="Classes Adviser"
+                          name="classes_adviser"
                           disabled={mutation.isPending}
                         />
                       </div>
                       <div className="relative mb-6">
                         <InputText
-                          label="Last Name"
-                          name="teachers_last_name"
-                          disabled={mutation.isPending}
-                        />
-                      </div>
-                      <div className="relative mb-6">
-                        <InputText
-                          label="Email"
-                          name="teachers_email"
-                          disabled={mutation.isPending}
-                        />
-                      </div>
-                      <div className="relative mb-6">
-                        <InputText
-                          label="Subject"
-                          name="teachers_subject"
+                          label="Classes Number of Students"
+                          name="classes_number_students"
                           disabled={mutation.isPending}
                         />
                       </div>
@@ -167,4 +159,4 @@ const ModalAddTeachers = ({ itemEdit, setIsOpen }) => {
   );
 };
 
-export default ModalAddTeachers;
+export default ModalAddClasses;

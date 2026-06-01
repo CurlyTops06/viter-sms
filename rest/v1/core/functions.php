@@ -35,6 +35,13 @@ function checkReadAll($object)
     checkQuery($query, "There's a problem processing your request. (readAll)");
     return $query;
 }
+// object is the file in models directory
+function checkReadLimit($object)
+{
+    $query = $object->readLimit();
+    checkQuery($query, "There's a problem processing your request. (readLimit)");
+    return $query;
+}
 
 // object is the file in models directory
 function checkReadById($object)
@@ -156,4 +163,29 @@ function checkId($id)
 {
     if (!$id || !is_numeric($id))
         returnHandleError('Invalid ID.', 'Invalid Request', '', '402');
+}
+
+
+function checkLimitId($start, $total)
+{
+    if ($start == '' || !is_numeric($start) || $total == '' || !is_numeric($total)) {
+        returnHandleError('Limit ID cannot be blank or must be number');
+    }
+}
+
+function checkReadQuery($query, $total_result, $total, $start)
+{
+    $response = new Response();
+    $returnData = [];
+    $returnData['data'] = getResultData($query);
+    $returnData['count'] = $query->rowCount();
+    $returnData['total'] = $total_result->rowCount();
+    $returnData['per_page'] = (int)$total;
+    $returnData['page'] = (int)$start;
+    $returnData['total_pages'] = ceil($total_result->rowCount() / $total);
+    $returnData['success'] = true;
+    $returnData['server_datetime'] = date('Y-m-d H:i:s');
+    $response->setData($returnData);
+    $response->send();
+    exit();
 }

@@ -16,6 +16,13 @@ class Students
     public $connection;
     public $lastInsertedId;
 
+
+    public $is_active;
+    public $search;
+    public $start;
+    public $total;
+
+
     public $tblStudents;
 
     public function __construct($db)
@@ -73,17 +80,90 @@ class Students
             $sql = "select ";
             $sql .= "* ";
             $sql .= "from {$this->tblStudents} ";
+            $sql .= "where true ";
+            //For Filter
+            $sql .= $this->is_active ? "and students_is_active = :students_is_active " : "";
+            // For Search
+            $sql .= $this->search ? "and ( " : "";
+            $sql .= $this->search ? "students_first_name LIKE :students_first_name " : "";
+            $sql .= $this->search ? "or students_last_name LIKE :students_last_name " : "";
+            $sql .= $this->search ? "or CONCAT(students_last_name,' ',students_first_name) LIKE :full_last_name " : "";
+            $sql .= $this->search ? "or CONCAT(students_first_name,' ',students_last_name) LIKE :full_first_name " : "";
+            $sql .= $this->search ? "or CONCAT(students_last_name,', ',students_first_name) LIKE :full_last_name_coma " : "";
+            $sql .= $this->search ? " ) " : "";
             $sql .= "order by ";
-            // $sql .= "students_first_name, ";
-            // $sql .= "students_last_name ";
+            $sql .= "students_first_name, ";
+            $sql .= "students_last_name, ";
             $sql .= "students_aid ";
-            $query = $this->connection->query($sql);
+            // $query = $this->connection->query($sql);
+            $query = $this->connection->prepare($sql);
+            $query->execute([
+                //for filter
+                ...$this->is_active ? [
+                    "students_is_active" => $this->is_active,
+                ] : [],
+                //for filter
+                ...$this->search ? [
+                    "students_first_name" => "%{$this->search}%",
+                    "students_last_name" => "%{$this->search}%",
+                    "full_last_name" => "%{$this->search}%",
+                    "full_first_name" => "%{$this->search}%",
+                    "full_last_name_coma" => "%{$this->search}%",
+                ] : [],
+            ]);
+        } catch (PDOException $e) {
+            $query = false;
+            returnHandleError($e);
+        }
+        return $query;
+    }
+    public function readLimit()
+    {
+        try {
+            $sql = "select ";
+            $sql .= "* ";
+            $sql .= "from {$this->tblStudents} ";
+            $sql .= "where true ";
+            //For Filter
+            $sql .= $this->is_active ? "and students_is_active = :students_is_active " : "";
+            // For Search
+            $sql .= $this->search ? "and ( " : "";
+            $sql .= $this->search ? "students_first_name LIKE :students_first_name " : "";
+            $sql .= $this->search ? "or students_last_name LIKE :students_last_name " : "";
+            $sql .= $this->search ? "or CONCAT(students_last_name,' ',students_first_name) LIKE :full_last_name " : "";
+            $sql .= $this->search ? "or CONCAT(students_first_name,' ',students_last_name) LIKE :full_first_name " : "";
+            $sql .= $this->search ? "or CONCAT(students_last_name,', ',students_first_name) LIKE :full_last_name_coma " : "";
+            $sql .= $this->search ? " ) " : "";
+            $sql .= "order by ";
+            $sql .= "students_aid asc ";
+            // For Load more like facebook
+            $sql .= "limit :start, ";
+            $sql .= ":total";
+            $query = $this->connection->prepare($sql);
+            $query->execute([
+                //for filter
+                ...$this->is_active ? [
+                    "students_is_active" => $this->is_active,
+                ] : [],
+                //for filter
+                ...$this->search ? [
+                    "students_first_name" => "%{$this->search}%",
+                    "students_last_name" => "%{$this->search}%",
+                    "full_last_name" => "%{$this->search}%",
+                    "full_first_name" => "%{$this->search}%",
+                    "full_last_name_coma" => "%{$this->search}%",
+                ] : [],
+                //for load more like facebook
+                "start" => $this->start - 1,
+                "total" => $this->total,
+            ]);
         } catch (PDOException $e) {
             $query = false;
         }
         return $query;
     }
-    public function read5()
+
+    public function readFive()
     {
         try {
             $sql = "select ";

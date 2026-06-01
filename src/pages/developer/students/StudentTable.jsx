@@ -19,15 +19,25 @@ import {
   setIsRestore,
 } from "../../../store/StoreAction";
 import React from "react";
+import SearchBar from "@/partials/SearchBar";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { queryDataInfinite } from "@/functions/custom-hooks/queryDataInfinite";
+import { useInView } from "react-intersection-observer";
+import Loadmore from "@/partials/Loadmore";
 
 const studentColumns = [
+  {
+    key: "counter",
+    header: "#",
+    render: (student) => <p>{student.counter}</p>,
+    mobileLabel: null,
+  },
   {
     key: "name",
     header: "Name",
     render: (student, key) => (
       <div className=" items-center gap-3 text-black flex">
-        {console.log(key++)}
-        <div className="hidden xl:block">{key++}.</div>
+        <div className="hidden xl:block">{key + 1}.</div>
         <div className="size-8 bg-blue-100 rounded-full flex items-center justify-center">
           <FaUser className="text-blue-600 text-sm" />
         </div>
@@ -37,7 +47,7 @@ const studentColumns = [
         </div>
       </div>
     ),
-    mobileLabel: null,
+    mobileLabel: "Student Name",
   },
   {
     key: "studentId",
@@ -137,21 +147,65 @@ const studentColumns = [
 
 const StudentsTable = ({ itemEdit, setItemEdit }) => {
   const { store, dispatch } = React.useContext(StoreContext);
+  const [filterStatus, setFilterStatus] = React.useState("");
+  const search = React.useRef({ value: "" });
+  const { ref, inView } = useInView();
+  const [page, setPage] = React.useState(1);
+  const refView = React.useRef(null);
 
   const {
-    isLoading: isLoadingStudents,
-    isFetching: isFetchingStudents,
-    error: errorStudents,
-    data: dataStudents,
-  } = useQueryData(
-    `${apiVersion}/controllers/developer/students/students.php`,
-    "get", //method
-    "students", //key
-  );
+    data: result,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetching,
+    isFetchingNextPage,
+    status,
+  } = useInfiniteQuery({
+    queryKey: ["students", search?.current.value, store.isSearch],
+    queryFn: async ({ pageParam = 1 }) =>
+      await queryDataInfinite(
+        `${apiVersion}/controllers/developer/students/page.php?start=${pageParam}`, //api path
+        store.isSearch, //is searching
+        {
+          filterStatus,
+          searchValue: search?.current.value,
+        },
+        "post",
+      ),
+    getNextPageParam: (lastPage) => {
+      if (lastPage.page < lastPage.total) {
+        return lastPage.page + lastPage.count;
+      }
+      return; //null || undefined
+    },
+  });
+
+  React.useEffect(() => {
+    if (inView) {
+      setPage((prev) => prev + 1);
+      fetchNextPage;
+    }
+  }, [inView]);
+
+  // const {
+  //   isLoading: isLoadingStudents,
+  //   isFetching: isFetchingStudents,
+  //   error: errorStudents,
+  //   data: dataStudents,
+  // } = useQueryData(
+  //   `${apiVersion}/controllers/developer/students/students.php`,
+  //   "get", //method
+  //   "students", //key
+  // );
+
+  const allStudents = result?.pages.flatMap((page) => page.data) ?? [];
+
   const studentArray =
-    dataStudents?.data.map((item) => {
+    allStudents.map((item, key) => {
       return {
         ...item,
+        counter: key + 1,
         id: item.students_aid,
         name: `${item.students_first_name} ${item.students_last_name}`,
         studentId: item.students_id,
@@ -168,22 +222,64 @@ const StudentsTable = ({ itemEdit, setItemEdit }) => {
 
   return (
     <>
-      <ResponsiveTable
-        isLoading={isLoadingStudents}
-        isFetching={isFetchingStudents}
-        error={errorStudents}
-        data={studentArray}
-        columns={studentColumns}
-        dataItem={itemEdit}
-        // queryKey="students" // for one records refetching
-        queryKey={["students", ""]} // for multiple records refetching
-        pathUrl={`/controllers/developer/students`} //this is for archive, restore, delete path api
-      />
-      {/* Total */}
-      <div className="px-6 py-4 bg-gray-100 border-t border-black flex justify-between">
-        <span className="text-sm text-gray-600">
-          {studentArray.length} students
-        </span>
+      {/* Filter and Search */}
+      <div className="flex flex-wrap items-center justify-between gap-2 py-2 text-dark">
+        {/* Filter */}
+        <div>
+          <div className="relative">
+            <label htmlFor="">Status</label>
+            <select
+              name=""
+              id=""
+              className="w-28"
+              onChange={(e) => {
+                setFilterStatus(e.target.value);
+              }}
+            >
+              <optgroup label="Select Status">
+                <option value="">All</option>
+                <option value="1">Active</option>
+                <option value="0">Inactive</option>
+              </optgroup>
+            </select>
+          </div>
+        </div>
+        {/* Search */}
+        <div className="relative">
+          <SearchBar search={search} result={[]} isFetching={isFetching} />
+        </div>
+      </div>
+      {/* Table */}
+      <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+        <ResponsiveTable
+          isLoading={status == "pending"}
+          isFetching={isFetching}
+          error={error}
+          data={studentArray}
+          columns={studentColumns}
+          dataItem={itemEdit}
+          // queryKey="students" // for one records refetching
+          queryKey={["students", ""]} // for multiple records refetching
+          pathUrl={`/controllers/developer/students`} //this is for archive, restore, delete path api
+        />
+        <div>
+          <Loadmore
+            fetchNextPage={fetchNextPage}
+            isFetchingNextPage={isFetchingNextPage}
+            hasNextPage={hasNextPage}
+            result={result}
+            setPage={setPage}
+            page={page}
+            refView={refView}
+            isSearch={store.isSearch}
+          />
+        </div>
+        {/* Total */}
+        <div className="px-6 py-4 bg-gray-100 border-t border-black flex justify-between">
+          <span className="text-sm text-gray-600">
+            {studentArray.length} students
+          </span>
+        </div>
       </div>
     </>
   );

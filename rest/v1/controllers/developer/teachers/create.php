@@ -12,6 +12,7 @@ if (array_key_exists('id', $_GET)) {
 
 $val->teachers_is_active = 1;
 $val->teachers_first_name = $data['teachers_first_name'];
+$val->teachers_honorific = $data['teachers_honorific'];
 $val->teachers_middle_name = $data['teachers_middle_name'];
 $val->teachers_last_name = $data['teachers_last_name'];
 $val->teachers_subject = $data['teachers_subject'];

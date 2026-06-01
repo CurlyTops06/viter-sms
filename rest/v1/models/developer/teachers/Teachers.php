@@ -4,6 +4,7 @@ class Teachers
 {
     public $teachers_aid;
     public $teachers_is_active;
+    public $teachers_honorific;
     public $teachers_first_name;
     public $teachers_middle_name;
     public $teachers_last_name;
@@ -29,6 +30,7 @@ class Teachers
             $sql = "insert into ";
             $sql .= "{$this->tblTeachers}";
             $sql .= "(teachers_is_active, ";
+            $sql .= "teachers_honorific, ";
             $sql .= "teachers_first_name, ";
             $sql .= "teachers_last_name, ";
             $sql .= "teachers_middle_name, ";
@@ -37,6 +39,7 @@ class Teachers
             $sql .= "teachers_created, ";
             $sql .= "teachers_updated ) values ( ";
             $sql .= ":teachers_is_active, ";
+            $sql .= ":teachers_honorific, ";
             $sql .= ":teachers_first_name, ";
             $sql .= ":teachers_last_name, ";
             $sql .= ":teachers_middle_name, ";
@@ -47,6 +50,7 @@ class Teachers
             $query = $this->connection->prepare($sql);
             $query->execute([
                 'teachers_is_active' => $this->teachers_is_active,
+                'teachers_honorific' => $this->teachers_honorific,
                 'teachers_first_name' => $this->teachers_first_name,
                 'teachers_last_name' => $this->teachers_last_name,
                 'teachers_middle_name' => $this->teachers_middle_name,
@@ -102,6 +106,7 @@ class Teachers
         try {
             $sql = "update {$this->tblTeachers} set ";
             $sql .= "teachers_first_name =:teachers_first_name, ";
+            $sql .= "teachers_honorific =:teachers_honorific, ";
             $sql .= "teachers_middle_name =:teachers_middle_name, ";
             $sql .= "teachers_last_name =:teachers_last_name, ";
             $sql .= "teachers_subject =:teachers_subject, ";
@@ -111,6 +116,7 @@ class Teachers
             $query = $this->connection->prepare($sql);
             $query->execute([
                 'teachers_first_name' => $this->teachers_first_name,
+                'teachers_honorific' => $this->teachers_honorific,
                 'teachers_middle_name' => $this->teachers_middle_name,
                 'teachers_last_name' => $this->teachers_last_name,
                 'teachers_subject' => $this->teachers_subject,
