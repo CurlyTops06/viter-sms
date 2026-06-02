@@ -6,7 +6,7 @@ class Classes
     public $classes_grade;
     public $classes_section;
     public $classes_adviser;
-    public $classes_number_students;
+    public $classes_year_id;
     public $classes_created;
     public $classes_updated;
 
@@ -14,11 +14,15 @@ class Classes
     public $lastInsertedId;
 
     public $tblClasses;
+    public $tblSchoolYear;
+    public $tblTeachers;
 
     public function __construct($db)
     {
         $this->connection = $db;
         $this->tblClasses = "sms_classes";
+        $this->tblSchoolYear = "sms_school_year";
+        $this->tblTeachers = "sms_teachers";
     }
 
     public function create()
@@ -29,13 +33,13 @@ class Classes
             $sql .= "(classes_grade, ";
             $sql .= "classes_section, ";
             $sql .= "classes_adviser, ";
-            $sql .= "classes_number_students, ";
+            $sql .= "classes_year_id, ";
             $sql .= "classes_created, ";
             $sql .= "classes_updated ) values ( ";
             $sql .= ":classes_grade, ";
             $sql .= ":classes_section, ";
             $sql .= ":classes_adviser, ";
-            $sql .= ":classes_number_students, ";
+            $sql .= ":classes_year_id, ";
             $sql .= ":classes_created, ";
             $sql .= ":classes_updated) ";
             $query = $this->connection->prepare($sql);
@@ -43,11 +47,11 @@ class Classes
                 'classes_grade' => $this->classes_grade,
                 'classes_section' => $this->classes_section,
                 'classes_adviser' => $this->classes_adviser,
-                'classes_number_students' => $this->classes_number_students,
+                'classes_year_id' => $this->classes_year_id,
                 'classes_created' => $this->classes_created,
                 'classes_updated' => $this->classes_updated,
             ]);
-            $this->lastInsertedId = $this->connection->lastInsertedId();
+            $this->lastInsertedId = $this->connection->lastInsertId();
         } catch (PDOException $e) {
             returnHandleError($e);
             $query = false;
@@ -59,8 +63,18 @@ class Classes
     {
         try {
             $sql = "select ";
-            $sql .= "* ";
-            $sql .= "from {$this->tblClasses} ";
+            // $sql .= "* ";
+            $sql .= "classes.*, ";
+            // $sql .= "schoolYear.* ";
+            $sql .= "schoolYear.school_year_start, ";
+            $sql .= "schoolYear.school_year_end, ";
+            $sql .= "teachers.teachers_first_name, ";
+            $sql .= "teachers.teachers_last_name ";
+            $sql .= "from {$this->tblClasses} as classes, ";
+            $sql .= "{$this->tblSchoolYear} as schoolYear, ";
+            $sql .= "{$this->tblTeachers} as teachers ";
+            $sql .= "where ";
+            $sql .= "classes.classes_year_id = schoolYear.school_year_aid ";
             $sql .= "order by ";
             // $sql .= "students_first_name, ";
             // $sql .= "students_last_name ";
@@ -68,6 +82,7 @@ class Classes
             $query = $this->connection->query($sql);
         } catch (PDOException $e) {
             $query = false;
+            returnHandleError($e);
         }
         return $query;
     }
@@ -79,7 +94,7 @@ class Classes
             $sql .= "classes_grade =:classes_grade, ";
             $sql .= "classes_section =:classes_section, ";
             $sql .= "classes_adviser =:classes_adviser, ";
-            $sql .= "classes_number_students =:classes_number_students, ";
+            $sql .= "classes_year_id =:classes_year_id, ";
             $sql .= "classes_updated =:classes_updated ";
             $sql .= "where classes_aid = :classes_aid ";
             $query = $this->connection->prepare($sql);
@@ -87,7 +102,7 @@ class Classes
                 'classes_grade' => $this->classes_grade,
                 'classes_section' => $this->classes_section,
                 'classes_adviser' => $this->classes_adviser,
-                'classes_number_students' => $this->classes_number_students,
+                'classes_year_id' => $this->classes_year_id,
                 'classes_updated' => $this->classes_updated,
                 'classes_aid' => $this->classes_aid,
             ]);

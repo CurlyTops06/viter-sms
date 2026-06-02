@@ -45,9 +45,7 @@ const Teachers = () => {
                 </button>
               </div>
               {/* List of Teachers */}
-              <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-                <TeacherTable itemEdit={itemEdit} setItemEdit={setItemEdit} />
-              </div>
+              <TeacherTable itemEdit={itemEdit} setItemEdit={setItemEdit} />
             </div>
           </>
         )}

@@ -1,5 +1,3 @@
-// src/components/students/StudentsTable.jsx
-// import ResponsiveTable from "../ui/ResponsiveTable";
 import {
   FaArchive,
   FaEdit,
@@ -29,7 +27,7 @@ const studentColumns = [
   {
     key: "counter",
     header: "#",
-    render: (student) => <p>{student.counter}</p>,
+    render: (student) => <p>{student.counter}.</p>,
     mobileLabel: null,
   },
   {
@@ -37,7 +35,6 @@ const studentColumns = [
     header: "Name",
     render: (student, key) => (
       <div className=" items-center gap-3 text-black flex">
-        <div className="hidden xl:block">{key + 1}.</div>
         <div className="size-8 bg-blue-100 rounded-full flex items-center justify-center">
           <FaUser className="text-blue-600 text-sm" />
         </div>
@@ -151,7 +148,6 @@ const StudentsTable = ({ itemEdit, setItemEdit }) => {
   const search = React.useRef({ value: "" });
   const { ref, inView } = useInView();
   const [page, setPage] = React.useState(1);
-  const refView = React.useRef(null);
 
   const {
     data: result,
@@ -162,7 +158,7 @@ const StudentsTable = ({ itemEdit, setItemEdit }) => {
     isFetchingNextPage,
     status,
   } = useInfiniteQuery({
-    queryKey: ["students", search?.current.value, store.isSearch],
+    queryKey: ["students", search?.current.value, store.isSearch, filterStatus],
     queryFn: async ({ pageParam = 1 }) =>
       await queryDataInfinite(
         `${apiVersion}/controllers/developer/students/page.php?start=${pageParam}`, //api path
@@ -184,7 +180,7 @@ const StudentsTable = ({ itemEdit, setItemEdit }) => {
   React.useEffect(() => {
     if (inView) {
       setPage((prev) => prev + 1);
-      fetchNextPage;
+      fetchNextPage();
     }
   }, [inView]);
 
@@ -206,12 +202,12 @@ const StudentsTable = ({ itemEdit, setItemEdit }) => {
       return {
         ...item,
         counter: key + 1,
-        id: item.students_aid,
-        name: `${item.students_first_name} ${item.students_last_name}`,
-        studentId: item.students_id,
-        grade: `${item.students_grade} - ${item.students_section}`,
-        gradeSection: `${item.students_grade} - ${item.students_section}`,
-        status: item.students_is_active ? "Active" : "Inactive",
+        id: item?.students_aid,
+        name: `${item?.students_first_name} ${item?.students_last_name}`,
+        studentId: item?.students_id,
+        grade: `${item?.students_grade} - ${item?.students_section}`,
+        gradeSection: `${item?.students_grade} - ${item?.students_section}`,
+        status: item?.students_is_active ? "Active" : "Inactive",
         setIsAdd: (val) => dispatch(setIsAdd(val)),
         setIsArchive: (val) => dispatch(setIsArchive(val)),
         setIsRestore: (val) => dispatch(setIsRestore(val)),
@@ -270,14 +266,14 @@ const StudentsTable = ({ itemEdit, setItemEdit }) => {
             result={result}
             setPage={setPage}
             page={page}
-            refView={refView}
+            refView={ref}
             isSearch={store.isSearch}
           />
         </div>
         {/* Total */}
         <div className="px-6 py-4 bg-gray-100 border-t border-black flex justify-between">
           <span className="text-sm text-gray-600">
-            {studentArray.length} students
+            {result?.pages[0].total ?? allStudents.length} students
           </span>
         </div>
       </div>

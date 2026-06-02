@@ -13,7 +13,7 @@ if (array_key_exists('id', $_GET)) {
 $val->classes_grade = $data['classes_grade'];
 $val->classes_section = $data['classes_section'];
 $val->classes_adviser = $data['classes_adviser'];
-$val->classes_number_students = $data['classes_number_students'];
+$val->classes_year_id = $data['classes_year_id'];
 $val->classes_created = date('Y-m-d H:i:s');
 $val->classes_updated = date('Y-m-d H:i:s');
 

@@ -1,59 +1,54 @@
 import { queryData } from "@/functions/custom-hooks/queryData";
-import { InputSelect, InputText } from "@/functions/FormInputs";
-import { apiVersion, formatDate } from "@/functions/functions-general";
+import { InputText } from "@/functions/FormInputs";
+import { apiVersion } from "@/functions/functions-general";
 import ModalWrapperSide from "@/partials/modal/ModalWrapperSide";
 import ButtonSpinner from "@/partials/spinners/ButtonSpinner";
+import { setIsError, setIsSuccess, setMessage } from "@/store/StoreAction";
+import { StoreContext } from "@/store/StoreContext";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Formik, Form } from "formik";
 import React from "react";
 import { FaTimesCircle } from "react-icons/fa";
 import * as Yup from "yup";
 
-const ModalAddClasses = ({ itemEdit, dataSchoolYear, setIsOpen }) => {
+const ModalAddSchoolYear = ({ itemEdit, setIsOpen }) => {
+  const { store, dispatch } = React.useContext(StoreContext);
   const [animate, setAnimate] = React.useState("translate-x-full");
-
-  const filterActiveSchoolYear = dataSchoolYear?.data.filter(
-    (data) => data.school_year_is_active == 1,
-  );
-
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: async (values) =>
       queryData(
         itemEdit
-          ? `${apiVersion}/controllers/developer/classes/classes.php?id=${itemEdit.classes_aid}` //Update Api Path
-          : `${apiVersion}/controllers/developer/classes/classes.php`,
+          ? `${apiVersion}/controllers/developer/school-year/school-year.php?id=${itemEdit.school_year_aid}` //Update Api Path
+          : `${apiVersion}/controllers/developer/school-year/school-year.php`,
         itemEdit ? "put" : "post", // Post = Create
         values, //The data to be sent
       ),
     onSuccess: (data) => {
       if (data.success) {
         // If success show the message
-        alert(`Successfully ${itemEdit ? "updated" : "added"}.`);
+        dispatch(setIsSuccess(true));
+        dispatch(setMessage(`Successfully ${itemEdit ? "updated" : "added"}.`));
         setIsOpen(false);
       } else {
         // If this is error alert/show the error msg
-        alert(data.error);
+        dispatch(setIsError(true));
+        dispatch(setMessage(data.error));
       }
       //This is to refetch the data after update or create
-      queryClient.invalidateQueries({ queryKey: ["classes"] });
+      queryClient.invalidateQueries({ queryKey: ["school-year"] });
     },
   });
 
   // THis is for the initial values in the modal
   const initVal = {
-    classes_grade: itemEdit ? itemEdit.classes_grade : "",
-    classes_section: itemEdit ? itemEdit.classes_section : "",
-    classes_adviser: itemEdit ? itemEdit.classes_adviser : "",
-    classes_number_students: itemEdit ? itemEdit.classes_number_students : "",
-    classes_year_id: itemEdit ? itemEdit.classes_year_id : "",
+    school_year_start: itemEdit ? itemEdit.school_year_start : "",
+    school_year_end: itemEdit ? itemEdit.school_year_end : "",
   };
   // This is for the validation in the form field
   const yupSchema = Yup.object({
-    classes_grade: Yup.string().trim().required("Required."),
-    classes_section: Yup.string().trim().required("Required."),
-    // classes_adviser: Yup.string().trim().required("Required."),
-    classes_number_students: Yup.string().trim().required("Required."),
+    school_year_start: Yup.string().trim().required("Required."),
+    school_year_end: Yup.string().trim().required("Required."),
   });
 
   //   THis is the function to close the modal
@@ -62,6 +57,7 @@ const ModalAddClasses = ({ itemEdit, dataSchoolYear, setIsOpen }) => {
     if (mutation.isPending) return;
     // animate the modal
     setAnimate("translate-x-full");
+    dispatch(setIsError(false));
     // delay and close the modal
     setTimeout(() => {
       setIsOpen(false);
@@ -70,6 +66,7 @@ const ModalAddClasses = ({ itemEdit, dataSchoolYear, setIsOpen }) => {
 
   React.useEffect(() => {
     // animate the modal entrance
+    dispatch(setIsError(false));
     setAnimate("");
   }, []);
 
@@ -78,7 +75,7 @@ const ModalAddClasses = ({ itemEdit, dataSchoolYear, setIsOpen }) => {
       <ModalWrapperSide handleClose={handleClose} className={`${animate}`}>
         <div className="flex justify-between mb-4  px-3 pt-2">
           <h3 className="text-black/80 font-medium text-sm">
-            {itemEdit ? "Update" : "Add"} Classes
+            {itemEdit ? "Update" : "Add"} School Year
           </h3>
           <button
             className=" text-black/50 cursor-pointer"
@@ -94,54 +91,29 @@ const ModalAddClasses = ({ itemEdit, dataSchoolYear, setIsOpen }) => {
             initialValues={initVal}
             validationSchema={yupSchema}
             onSubmit={async (values, { setSubmitting, resetForm }) => {
+              dispatch(setIsError(false));
               mutation.mutate(values);
             }}
           >
             {(props) => {
-              console.log(props);
               return (
                 <Form className="h-full">
                   <div className="modal-form-container">
                     <div className="modal-container">
                       <div className="relative mb-6">
                         <InputText
-                          label="Classes Grade"
-                          name="classes_grade"
+                          label="Year Date Start"
+                          name="school_year_start"
+                          type="date"
                           disabled={mutation.isPending}
                         />
                       </div>
                       <div className="relative mb-6">
                         <InputText
-                          label="Classes Section"
-                          name="classes_section"
-                          disabled={mutation.isPending}
-                        />
-                      </div>
-                      <div className="relative mb-6 text-black">
-                        <InputSelect
-                          label="SchoolYear"
-                          name="classes_year_id"
-                          disabled={mutation.isPending}
-                        >
-                          <optgroup label="Select School Year">
-                            <option value="" hidden>
-                              --
-                            </option>
-                            {filterActiveSchoolYear.map((item, key) => {
-                              return (
-                                <option key={key} value={item.school_year_aid}>
-                                  {formatDate(item.school_year_start)} - {""}
-                                  {formatDate(item.school_year_end)}
-                                </option>
-                              );
-                            })}
-                          </optgroup>
-                        </InputSelect>
-                      </div>
-                      <div className="relative mb-6">
-                        <InputText
-                          label="Classes Number of Students"
-                          name="classes_number_students"
+                          label="Year Date End"
+                          name="school_year_end"
+                          type="date"
+                          min={props.values.school_year_start}
                           disabled={mutation.isPending}
                         />
                       </div>
@@ -180,4 +152,4 @@ const ModalAddClasses = ({ itemEdit, dataSchoolYear, setIsOpen }) => {
   );
 };
 
-export default ModalAddClasses;
+export default ModalAddSchoolYear;

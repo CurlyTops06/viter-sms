@@ -16,12 +16,10 @@ class Students
     public $connection;
     public $lastInsertedId;
 
-
-    public $is_active;
-    public $search;
+    public $is_active = '';
+    public $search = '';
     public $start;
     public $total;
-
 
     public $tblStudents;
 
@@ -82,15 +80,15 @@ class Students
             $sql .= "from {$this->tblStudents} ";
             $sql .= "where true ";
             //For Filter
-            $sql .= $this->is_active ? "and students_is_active = :students_is_active " : "";
+            $sql .= $this->is_active != '' ? "and students_is_active = :students_is_active " : "";
             // For Search
-            $sql .= $this->search ? "and ( " : "";
-            $sql .= $this->search ? "students_first_name LIKE :students_first_name " : "";
-            $sql .= $this->search ? "or students_last_name LIKE :students_last_name " : "";
-            $sql .= $this->search ? "or CONCAT(students_last_name,' ',students_first_name) LIKE :full_last_name " : "";
-            $sql .= $this->search ? "or CONCAT(students_first_name,' ',students_last_name) LIKE :full_first_name " : "";
-            $sql .= $this->search ? "or CONCAT(students_last_name,', ',students_first_name) LIKE :full_last_name_coma " : "";
-            $sql .= $this->search ? " ) " : "";
+            $sql .= $this->search != ''  ? "and ( " : "";
+            $sql .= $this->search != ''  ? "students_first_name LIKE :students_first_name " : "";
+            $sql .= $this->search != ''  ? "or students_last_name LIKE :students_last_name " : "";
+            $sql .= $this->search != ''  ? "or CONCAT(students_last_name,' ',students_first_name) LIKE :full_last_name " : "";
+            $sql .= $this->search != ''  ? "or CONCAT(students_first_name,' ',students_last_name) LIKE :full_first_name " : "";
+            $sql .= $this->search != ''  ? "or CONCAT(students_last_name,', ',students_first_name) LIKE :full_last_name_coma " : "";
+            $sql .= $this->search != ''  ? " ) " : "";
             $sql .= "order by ";
             $sql .= "students_first_name, ";
             $sql .= "students_last_name, ";
@@ -99,11 +97,11 @@ class Students
             $query = $this->connection->prepare($sql);
             $query->execute([
                 //for filter
-                ...$this->is_active ? [
+                ...$this->is_active != '' ? [
                     "students_is_active" => $this->is_active,
                 ] : [],
                 //for filter
-                ...$this->search ? [
+                ...$this->search != ''  ? [
                     "students_first_name" => "%{$this->search}%",
                     "students_last_name" => "%{$this->search}%",
                     "full_last_name" => "%{$this->search}%",
@@ -125,15 +123,15 @@ class Students
             $sql .= "from {$this->tblStudents} ";
             $sql .= "where true ";
             //For Filter
-            $sql .= $this->is_active ? "and students_is_active = :students_is_active " : "";
+            $sql .=  $this->is_active != '' ? "and students_is_active = :students_is_active " : "";
             // For Search
-            $sql .= $this->search ? "and ( " : "";
-            $sql .= $this->search ? "students_first_name LIKE :students_first_name " : "";
-            $sql .= $this->search ? "or students_last_name LIKE :students_last_name " : "";
-            $sql .= $this->search ? "or CONCAT(students_last_name,' ',students_first_name) LIKE :full_last_name " : "";
-            $sql .= $this->search ? "or CONCAT(students_first_name,' ',students_last_name) LIKE :full_first_name " : "";
-            $sql .= $this->search ? "or CONCAT(students_last_name,', ',students_first_name) LIKE :full_last_name_coma " : "";
-            $sql .= $this->search ? " ) " : "";
+            $sql .=  $this->search != '' ? "and ( " : "";
+            $sql .=  $this->search != '' ? "students_first_name LIKE :students_first_name " : "";
+            $sql .=  $this->search != '' ? "or students_last_name LIKE :students_last_name " : "";
+            $sql .=  $this->search != '' ? "or CONCAT(students_last_name,' ',students_first_name) LIKE :full_last_name " : "";
+            $sql .=  $this->search != '' ? "or CONCAT(students_first_name,' ',students_last_name) LIKE :full_first_name " : "";
+            $sql .=  $this->search != '' ? "or CONCAT(students_last_name,', ',students_first_name) LIKE :full_last_name_coma " : "";
+            $sql .=  $this->search != '' ? " ) " : "";
             $sql .= "order by ";
             $sql .= "students_aid asc ";
             // For Load more like facebook
@@ -142,11 +140,11 @@ class Students
             $query = $this->connection->prepare($sql);
             $query->execute([
                 //for filter
-                ...$this->is_active ? [
+                ...$this->is_active != '' ? [
                     "students_is_active" => $this->is_active,
                 ] : [],
                 //for filter
-                ...$this->search ? [
+                ...$this->search != '' ? [
                     "students_first_name" => "%{$this->search}%",
                     "students_last_name" => "%{$this->search}%",
                     "full_last_name" => "%{$this->search}%",

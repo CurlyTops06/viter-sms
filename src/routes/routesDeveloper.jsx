@@ -1,3 +1,4 @@
+import SchoolYear from "@/pages/developer/school-year/SchoolYear";
 import { devNavUrl, urlDeveloper } from "../functions/functions-general";
 import Classes from "../pages/developer/classes/Classes";
 import Dashboard from "../pages/developer/dashboard/Dashboard";
@@ -43,6 +44,14 @@ export const routesDeveloper = [
     element: (
       <>
         <Classes />
+      </>
+    ),
+  },
+  {
+    path: `${devNavUrl}/${urlDeveloper}/school-year`,
+    element: (
+      <>
+        <SchoolYear />
       </>
     ),
   },

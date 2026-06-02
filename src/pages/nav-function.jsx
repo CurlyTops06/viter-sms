@@ -6,6 +6,7 @@ import {
   FaUserGraduate,
 } from "react-icons/fa6";
 import { devNavUrl, urlDeveloper } from "../functions/functions-general";
+import { IoIosTime } from "react-icons/io";
 
 export const navList = [
   {
@@ -31,6 +32,12 @@ export const navList = [
     icon: <FaBuilding />,
     menu: "classes",
     path: `${devNavUrl}/${urlDeveloper}/classes`,
+  },
+  {
+    label: "School Year",
+    icon: <IoIosTime />,
+    menu: "school-year",
+    path: `${devNavUrl}/${urlDeveloper}/school-year`,
   },
   {
     label: "Settings",

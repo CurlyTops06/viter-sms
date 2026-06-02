@@ -7,7 +7,7 @@ import { StoreContext } from "@/store/StoreContext";
 import { FaPlus } from "react-icons/fa";
 import { setIsAdd } from "@/store/StoreAction";
 import useQueryData from "@/functions/custom-hooks/useQueryData";
-import { apiVersion } from "@/functions/functions-general";
+import { apiVersion, formatDate } from "@/functions/functions-general";
 import ModalAddClasses from "./ModalAddClasses";
 
 export const handleAction = (setIsOpen, setItemEdit, item) => {
@@ -21,6 +21,17 @@ const Classes = () => {
   const [itemEdit, setItemEdit] = React.useState(null);
 
   const {
+    isLoading: isLoadingSchoolYear,
+    isFetching: isFetchingSchoolYear,
+    error: errorSchoolYear,
+    data: dataSchoolYear,
+  } = useQueryData(
+    `${apiVersion}/controllers/developer/school-year/school-year.php`,
+    "get",
+    "school-year",
+  );
+
+  const {
     isLoading: isLoadingClasses,
     isFetching: isFetchingClasses,
     error: errorClasses,
@@ -30,14 +41,24 @@ const Classes = () => {
     "get",
     "classes",
   );
+  const {
+    isLoading: isLoadingTeachers,
+    isFetching: isFetchingTeachers,
+    error: errorTeachers,
+    data: dataTeachers,
+  } = useQueryData(
+    `${apiVersion}/controllers/developer/teachers/teachers.php`,
+    "get",
+    "teachers",
+  );
   const classesArray =
     dataClasses?.data.map((item) => {
       return {
         ...item,
         id: item.classes_aid,
         gradeSection: `${item.classes_grade} - ${item.classes_section}`,
-        adviser: `${item.classes_adviser}`,
-        noOfStudents: `${item.classes_number_students}`,
+        adviser: `${item.teachers_last_name}, ${item.teachers_first_name}`,
+        noOfStudents: `${formatDate(item.school_year_start)} - ${formatDate(item.school_year_end)}`,
         setIsAdd: (val) => dispatch(setIsAdd(val)),
         setIsArchive: (val) => dispatch(setIsArchive(val)),
         setIsRestore: (val) => dispatch(setIsRestore(val)),
@@ -122,6 +143,7 @@ const Classes = () => {
       {store.isAdd && (
         <ModalAddClasses
           itemEdit={itemEdit}
+          dataSchoolYear={dataSchoolYear}
           setIsOpen={(val) => dispatch(setIsAdd(val))}
         />
       )}
