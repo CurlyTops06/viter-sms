@@ -4,7 +4,7 @@ import { queryData } from "../../../functions/custom-hooks/queryData";
 import { apiVersion } from "../../../functions/functions-general";
 import ModalWrapperSide from "../../../partials/modal/ModalWrapperSide";
 import { FaTimesCircle } from "react-icons/fa";
-import { InputText } from "../../../functions/FormInputs";
+import { InputSelect, InputText } from "../../../functions/FormInputs";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import ButtonSpinner from "../../../partials/spinners/ButtonSpinner";
@@ -130,19 +130,49 @@ const ModalAddStudents = ({ itemEdit, setIsOpen }) => {
                           disabled={mutation.isPending}
                         />
                       </div>
-                      <div className="relative mb-6">
-                        <InputText
+                      <div className="relative mb-6 text-black">
+                        {/* <InputText
                           label="Grade"
                           name="students_grade"
                           disabled={mutation.isPending}
-                        />
+                        /> */}
+                        <InputSelect
+                          label="Grade"
+                          name="students_grade"
+                          disabled={mutation.isPending}
+                        >
+                          <optgroup label="Select Grade">
+                            <option value="" hidden>
+                              --
+                            </option>
+                            <option>Grade 7</option>
+                            <option>Grade 8</option>
+                            <option>Grade 9</option>
+                            <option>Grade 10</option>
+                          </optgroup>
+                        </InputSelect>
                       </div>
-                      <div className="relative mb-6">
-                        <InputText
+                      <div className="relative mb-6 text-black">
+                        {/* <InputText
                           label="Section"
                           name="students_section"
                           disabled={mutation.isPending}
-                        />
+                        /> */}
+                        <InputSelect
+                          label="Section"
+                          name="students_section"
+                          disabled={mutation.isPending}
+                        >
+                          <optgroup label="Select Section">
+                            <option value="" hidden>
+                              --
+                            </option>
+                            <option>Section A</option>
+                            <option>Section B</option>
+                            <option>Section C</option>
+                            <option>Section D</option>
+                          </optgroup>
+                        </InputSelect>
                       </div>
                     </div>
                     <div className="modal-action">

@@ -41,6 +41,12 @@ const Dashboard = () => {
     "teachers", //key
   );
   const teacherArray = dataTeachers?.data.length ?? [];
+  const { data: dataClasses } = useQueryData(
+    `${apiVersion}/controllers/developer/classes/classes.php`,
+    "get", //method
+    "classes", //key
+  );
+  const classArray = dataClasses?.data.length ?? [];
   const stats = [
     {
       title: "Total Students",
@@ -62,7 +68,7 @@ const Dashboard = () => {
     },
     {
       title: "Total Classes",
-      value: classes.length,
+      value: classArray,
       trend: false,
       trendLabel: "Grade 7 to Grade 12",
       icon: <FaSchool />,

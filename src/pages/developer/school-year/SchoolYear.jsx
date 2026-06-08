@@ -2,7 +2,6 @@ import React from "react";
 import useDocumentTitle from "../../../functions/custom-hooks/useDocumentTitle";
 import Layout from "../Layout";
 import Header from "../../../partials/Header";
-import ClassesCard from "./SchoolYearCard";
 import { StoreContext } from "@/store/StoreContext";
 import { FaPlus } from "react-icons/fa";
 import { setIsAdd } from "@/store/StoreAction";
@@ -80,7 +79,13 @@ const SchoolYear = () => {
                 </button>
               </div>
             </div>
-            <SchoolYearList itemEdit={itemEdit} setItemEdit={setItemEdit} />
+            <SchoolYearList
+              itemEdit={itemEdit}
+              setItemEdit={setItemEdit}
+              queryKey={["school-year", ""]}
+              dataItem={itemEdit}
+              pathUrl={`/controllers/developer/school-year`}
+            />
           </>
         )}
       </Layout>

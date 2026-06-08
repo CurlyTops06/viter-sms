@@ -3,6 +3,7 @@
 class Classes
 {
     public $classes_aid;
+    public $classes_is_active;
     public $classes_grade;
     public $classes_section;
     public $classes_adviser;
@@ -12,6 +13,11 @@ class Classes
 
     public $connection;
     public $lastInsertedId;
+
+    public $is_active = '';
+    public $search = '';
+    public $start;
+    public $total;
 
     public $tblClasses;
     public $tblSchoolYear;
@@ -30,12 +36,14 @@ class Classes
         try {
             $sql = "insert into ";
             $sql .= "{$this->tblClasses}";
-            $sql .= "(classes_grade, ";
+            $sql .= "(classes_is_active, ";
+            $sql .= "classes_grade, ";
             $sql .= "classes_section, ";
             $sql .= "classes_adviser, ";
             $sql .= "classes_year_id, ";
             $sql .= "classes_created, ";
             $sql .= "classes_updated ) values ( ";
+            $sql .= ":classes_is_active, ";
             $sql .= ":classes_grade, ";
             $sql .= ":classes_section, ";
             $sql .= ":classes_adviser, ";
@@ -44,6 +52,7 @@ class Classes
             $sql .= ":classes_updated) ";
             $query = $this->connection->prepare($sql);
             $query->execute([
+                'classes_is_active' => $this->classes_is_active,
                 'classes_grade' => $this->classes_grade,
                 'classes_section' => $this->classes_section,
                 'classes_adviser' => $this->classes_adviser,
@@ -75,6 +84,7 @@ class Classes
             $sql .= "{$this->tblTeachers} as teachers ";
             $sql .= "where ";
             $sql .= "classes.classes_year_id = schoolYear.school_year_aid ";
+            $sql .= "and teachers.teachers_aid = classes.classes_adviser ";
             $sql .= "order by ";
             // $sql .= "students_first_name, ";
             // $sql .= "students_last_name ";
@@ -118,6 +128,24 @@ class Classes
             $sql .= "where classes_aid = :classes_aid ";
             $query = $this->connection->prepare($sql);
             $query->execute([
+                'classes_aid' => $this->classes_aid,
+            ]);
+        } catch (PDOException $e) {
+            $query = false;
+        }
+        return $query;
+    }
+    public function active()
+    {
+        try {
+            $sql = "update {$this->tblClasses} set ";
+            $sql .= "classes_is_active =:classes_is_active, ";
+            $sql .= "classes_updated =:classes_updated ";
+            $sql .= "where classes_aid = :classes_aid ";
+            $query = $this->connection->prepare($sql);
+            $query->execute([
+                'classes_is_active' => $this->classes_is_active,
+                'classes_updated' => $this->classes_updated,
                 'classes_aid' => $this->classes_aid,
             ]);
         } catch (PDOException $e) {

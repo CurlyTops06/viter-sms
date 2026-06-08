@@ -9,12 +9,26 @@ import React from "react";
 import { FaTimesCircle } from "react-icons/fa";
 import * as Yup from "yup";
 
-const ModalAddClasses = ({ itemEdit, dataSchoolYear, setIsOpen }) => {
+const ModalAddClasses = ({
+  itemEdit,
+  dataSchoolYear,
+  dataTeachers,
+  dataStudents,
+  setIsOpen,
+}) => {
   const [animate, setAnimate] = React.useState("translate-x-full");
 
   const filterActiveSchoolYear = dataSchoolYear?.data.filter(
     (data) => data.school_year_is_active == 1,
   );
+
+  const filterActiveAdviser = dataTeachers?.data.filter(
+    (data) => data.teachers_is_active == 1,
+  );
+
+  // const getSpecificStudent = dataStudents?.data.filter(
+  //   (data) => data.students_
+  // );
 
   const queryClient = useQueryClient();
   const mutation = useMutation({
@@ -45,15 +59,14 @@ const ModalAddClasses = ({ itemEdit, dataSchoolYear, setIsOpen }) => {
     classes_grade: itemEdit ? itemEdit.classes_grade : "",
     classes_section: itemEdit ? itemEdit.classes_section : "",
     classes_adviser: itemEdit ? itemEdit.classes_adviser : "",
-    classes_number_students: itemEdit ? itemEdit.classes_number_students : "",
     classes_year_id: itemEdit ? itemEdit.classes_year_id : "",
   };
   // This is for the validation in the form field
   const yupSchema = Yup.object({
     classes_grade: Yup.string().trim().required("Required."),
     classes_section: Yup.string().trim().required("Required."),
-    // classes_adviser: Yup.string().trim().required("Required."),
-    classes_number_students: Yup.string().trim().required("Required."),
+    classes_adviser: Yup.string().trim().required("Required."),
+    classes_year_id: Yup.string().trim().required("Required."),
   });
 
   //   THis is the function to close the modal
@@ -103,19 +116,49 @@ const ModalAddClasses = ({ itemEdit, dataSchoolYear, setIsOpen }) => {
                 <Form className="h-full">
                   <div className="modal-form-container">
                     <div className="modal-container">
-                      <div className="relative mb-6">
-                        <InputText
+                      <div className="relative mb-6 text-black">
+                        {/* <InputText
                           label="Classes Grade"
                           name="classes_grade"
                           disabled={mutation.isPending}
-                        />
+                        /> */}
+                        <InputSelect
+                          label="Classes Grade"
+                          name="classes_grade"
+                          disabled={mutation.isPending}
+                        >
+                          <optgroup label="Select Grade">
+                            <option value="" hidden>
+                              --
+                            </option>
+                            <option>Grade 7</option>
+                            <option>Grade 8</option>
+                            <option>Grade 9</option>
+                            <option>Grade 10</option>
+                          </optgroup>
+                        </InputSelect>
                       </div>
-                      <div className="relative mb-6">
-                        <InputText
+                      <div className="relative mb-6 text-black">
+                        {/* <InputText
                           label="Classes Section"
                           name="classes_section"
                           disabled={mutation.isPending}
-                        />
+                        /> */}
+                        <InputSelect
+                          label="Classes Section"
+                          name="classes_section"
+                          disabled={mutation.isPending}
+                        >
+                          <optgroup label="Select Section">
+                            <option value="" hidden>
+                              --
+                            </option>
+                            <option>Section A</option>
+                            <option>Section B</option>
+                            <option>Section C</option>
+                            <option>Section D</option>
+                          </optgroup>
+                        </InputSelect>
                       </div>
                       <div className="relative mb-6 text-black">
                         <InputSelect
@@ -138,13 +181,35 @@ const ModalAddClasses = ({ itemEdit, dataSchoolYear, setIsOpen }) => {
                           </optgroup>
                         </InputSelect>
                       </div>
-                      <div className="relative mb-6">
+                      <div className="relative mb-6 text-black">
+                        <InputSelect
+                          label="Adviser"
+                          name="classes_adviser"
+                          disabled={mutation.isPending}
+                        >
+                          <optgroup label="Select Adviser">
+                            <option value="" hidden>
+                              --
+                            </option>
+                            {filterActiveAdviser.map((item, key) => {
+                              return (
+                                <option key={key} value={item.teachers_aid}>
+                                  {item.teachers_last_name}
+                                  {", "}
+                                  {item.teachers_first_name}
+                                </option>
+                              );
+                            })}
+                          </optgroup>
+                        </InputSelect>
+                      </div>
+                      {/* <div className="relative mb-6">
                         <InputText
                           label="Classes Number of Students"
                           name="classes_number_students"
                           disabled={mutation.isPending}
                         />
-                      </div>
+                      </div> */}
                     </div>
                     <div className="modal-action">
                       <button

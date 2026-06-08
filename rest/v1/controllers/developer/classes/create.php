@@ -10,6 +10,7 @@ if (array_key_exists('id', $_GET)) {
     checkEndpoint();
 }
 
+$val->classes_is_active = 1;
 $val->classes_grade = $data['classes_grade'];
 $val->classes_section = $data['classes_section'];
 $val->classes_adviser = $data['classes_adviser'];

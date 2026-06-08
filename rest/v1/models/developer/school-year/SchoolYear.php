@@ -12,6 +12,11 @@ class SchoolYear
     public $connection;
     public $lastInsertedId;
 
+    public $is_active = '';
+    public $search = '';
+    public $start;
+    public $total;
+
     public $tblSchoolYear;
 
     public function __construct($db)
@@ -63,6 +68,25 @@ class SchoolYear
             $sql .= "school_year_start, ";
             $sql .= "school_year_end";
             $query = $this->connection->query($sql);
+        } catch (PDOException $e) {
+            $query = false;
+        }
+        return $query;
+    }
+
+    public function active()
+    {
+        try {
+            $sql = "update {$this->tblSchoolYear} set ";
+            $sql .= "school_year_is_active =:school_year_is_active, ";
+            $sql .= "school_year_updated =:school_year_updated ";
+            $sql .= "where school_year_aid = :school_year_aid ";
+            $query = $this->connection->prepare($sql);
+            $query->execute([
+                'school_year_is_active' => $this->school_year_is_active,
+                'school_year_updated' => $this->school_year_updated,
+                'school_year_aid' => $this->school_year_aid,
+            ]);
         } catch (PDOException $e) {
             $query = false;
         }

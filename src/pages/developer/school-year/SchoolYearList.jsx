@@ -14,9 +14,15 @@ import { StoreContext } from "@/store/StoreContext";
 import React from "react";
 import SchoolYearCard from "./SchoolYearCard";
 
-const SchoolYearList = ({ itemEdit, setItemEdit }) => {
+const SchoolYearList = ({
+  itemEdit,
+  setItemEdit,
+  queryKey = "",
+  pathUrl = "",
+}) => {
   const { store, dispatch } = React.useContext(StoreContext);
-
+  const deletePathUrl = pathUrl.split("/");
+  const deleteLastIndex = deletePathUrl[deletePathUrl.length - 1];
   const {
     isLoading,
     isFetching,
@@ -47,12 +53,6 @@ const SchoolYearList = ({ itemEdit, setItemEdit }) => {
       {/* filter */}
       <div className="flex  px-8 pt-6">
         <div className="flex items-center gap-2 text-dark">
-          <select className="filter-data">
-            <option>Grade 7</option>
-            <option>Grade 8</option>
-            <option>Grade 9</option>
-            <option>Grade 10</option>
-          </select>
           <select className="filter-data">
             <option>2025-2026</option>
             <option>2024-2025</option>
@@ -91,7 +91,15 @@ const SchoolYearList = ({ itemEdit, setItemEdit }) => {
           </div>
         ) : (
           schoolYearArray.map((c) => (
-            <SchoolYearCard key={c.id} item={c} data={schoolYearArray} />
+            <SchoolYearCard
+              key={c.id}
+              item={c}
+              data={schoolYearArray}
+              deleteLastIndex={deleteLastIndex}
+              pathUrl={pathUrl}
+              dataItem={itemEdit}
+              queryKey={queryKey}
+            />
           ))
         )}
       </div>
