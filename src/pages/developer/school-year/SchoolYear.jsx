@@ -21,31 +21,31 @@ const SchoolYear = () => {
   const { store, dispatch } = React.useContext(StoreContext);
   const [itemEdit, setItemEdit] = React.useState(null);
 
-  const {
-    isLoading: isLoadingClasses,
-    isFetching: isFetchingClasses,
-    error: errorClasses,
-    data: dataClasses,
-  } = useQueryData(
-    `${apiVersion}/controllers/developer/classes/classes.php`,
-    "get",
-    "classes",
-  );
-  const classesArray =
-    dataClasses?.data.map((item) => {
-      return {
-        ...item,
-        id: item.classes_aid,
-        gradeSection: `${item.classes_grade} - ${item.classes_section}`,
-        adviser: `${item.classes_adviser}`,
-        noOfStudents: `${item.classes_number_students}`,
-        setIsAdd: (val) => dispatch(setIsAdd(val)),
-        setIsArchive: (val) => dispatch(setIsArchive(val)),
-        setIsRestore: (val) => dispatch(setIsRestore(val)),
-        setIsDelete: (val) => dispatch(setIsDelete(val)),
-        setItemEdit,
-      };
-    }) ?? [];
+  // const {
+  //   isLoading: isLoadingClasses,
+  //   isFetching: isFetchingClasses,
+  //   error: errorClasses,
+  //   data: dataClasses,
+  // } = useQueryData(
+  //   `${apiVersion}/controllers/developer/classes/classes.php`,
+  //   "get",
+  //   "classes",
+  // );
+  // const classesArray =
+  //   dataClasses?.data.map((item) => {
+  //     return {
+  //       ...item,
+  //       id: item.classes_aid,
+  //       gradeSection: `${item.classes_grade} - ${item.classes_section}`,
+  //       adviser: `${item.classes_adviser}`,
+  //       noOfStudents: `${item.classes_number_students}`,
+  //       setIsAdd: (val) => dispatch(setIsAdd(val)),
+  //       setIsArchive: (val) => dispatch(setIsArchive(val)),
+  //       setIsRestore: (val) => dispatch(setIsRestore(val)),
+  //       setIsDelete: (val) => dispatch(setIsDelete(val)),
+  //       setItemEdit,
+  //     };
+  //   }) ?? [];
 
   return (
     <>

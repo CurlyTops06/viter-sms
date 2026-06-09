@@ -73,6 +73,56 @@ class SchoolYear
         }
         return $query;
     }
+    public function readLimit()
+    {
+        try {
+            $sql = "select ";
+            $sql .= "* ";
+            $sql .= "from {$this->tblSchoolYear} ";
+            // $sql .= "where ";
+            // $sql .= "school_year_aid = school_year_aid ";
+            //For Filter
+            $sql .=  $this->is_active != '' ? "and school_year_is_active = :school_year_is_active " : "";
+            // For Search
+            $sql .=  $this->search != '' ? "and ( " : "";
+            $sql .=  $this->search != '' ? "school_year_aid = :search " : "";
+            // $sql .=  $this->search != '' ? "school_year_start LIKE :school_year_start " : "";
+            // $sql .=  $this->search != '' ? "or school_year_end LIKE :school_year_end " : "";
+            // $sql .=  $this->search != '' ? "or CONCAT(school_year_start,' ',school_year_end) LIKE :full_school_year_start " : "";
+            // $sql .=  $this->search != '' ? "or CONCAT(school_year_end,' ',school_year_start) LIKE :full_school_year_end " : "";
+            // $sql .=  $this->search != '' ? "or CONCAT(school_year_start,' - ',school_year_end) LIKE :full_school_year_coma " : "";
+            $sql .=  $this->search != '' ? " ) " : "";
+            $sql .= "order by ";
+            // $sql .= "students_first_name, ";
+            // $sql .= "students_last_name ";
+            $sql .= "school_year_start, ";
+            $sql .= "school_year_aid ";
+            $sql .= "limit :start, ";
+            $sql .= ":total";
+            $query = $this->connection->prepare($sql);
+            $query->execute([
+                //for filter
+                ...$this->is_active != '' ? [
+                    "school_year_is_active" => $this->is_active,
+                ] : [],
+                //for filter
+                ...$this->search != '' ? [
+                    "school_year_aid" => "%{$this->search}%",
+                    // "school_year_start" => "%{$this->search}%",
+                    // "school_year_end" => "%{$this->search}%",
+                    // "full_school_year_start" => "%{$this->search}%",
+                    // "full_school_year_end" => "%{$this->search}%",
+                    // "full_school_year_coma" => "%{$this->search}%",
+                ] : [],
+                //for load more like facebook
+                "start" => $this->start - 1,
+                "total" => $this->total,
+            ]);
+        } catch (PDOException $e) {
+            $query = false;
+        }
+        return $query;
+    }
 
     public function active()
     {

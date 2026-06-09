@@ -5,12 +5,20 @@ import Header from "../../../partials/Header";
 import ClassesCard from "./ClassesCard";
 import { StoreContext } from "@/store/StoreContext";
 import { FaPlus } from "react-icons/fa";
-import { setIsAdd, setIsArchive, setIsRestore } from "@/store/StoreAction";
+import {
+  setIsAdd,
+  setIsArchive,
+  setIsDelete,
+  setIsRestore,
+} from "@/store/StoreAction";
 import useQueryData from "@/functions/custom-hooks/useQueryData";
 import { apiVersion, formatDate } from "@/functions/functions-general";
 import ModalAddClasses from "./ModalAddClasses";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { queryDataInfinite } from "@/functions/custom-hooks/queryDataInfinite";
+import { useInView } from "react-intersection-observer";
+import Loadmore from "@/partials/Loadmore";
+import SearchBar from "@/partials/SearchBar";
 
 export const handleAction = (setIsOpen, setItemEdit, item) => {
   setIsOpen(true);
@@ -22,7 +30,11 @@ const Classes = () => {
   useDocumentTitle("Classes | Student Management System");
   const { store, dispatch } = React.useContext(StoreContext);
   const [filterStatus, setFilterStatus] = React.useState("");
+  const [filterGrade, setFilterGrade] = React.useState("");
+  const [filterSchoolYear, setFilterSchoolYear] = React.useState("");
   const search = React.useRef({ value: "" });
+  const { ref, inView } = useInView();
+  const [page, setPage] = React.useState(1);
   const [itemEdit, setItemEdit] = React.useState(null);
 
   const {
@@ -34,7 +46,14 @@ const Classes = () => {
     isFetchingNextPage,
     status,
   } = useInfiniteQuery({
-    queryKey: ["classes", search?.current.value, store.isSearch, filterStatus],
+    queryKey: [
+      "classes",
+      search?.current.value,
+      store.isSearch,
+      filterStatus,
+      filterGrade,
+      filterSchoolYear,
+    ],
     queryFn: async ({ pageParam = 1 }) =>
       await queryDataInfinite(
         `${apiVersion}/controllers/developer/classes/page.php?start=${pageParam}`,
@@ -42,6 +61,8 @@ const Classes = () => {
         {
           filterStatus,
           searchValue: search?.current.value,
+          filterGrade,
+          filterSchoolYear,
         },
         "post",
       ),
@@ -53,6 +74,13 @@ const Classes = () => {
     },
   });
 
+  React.useEffect(() => {
+    if (inView) {
+      setPage((prev) => prev + 1);
+      fetchNextPage();
+    }
+  }, [inView]);
+
   const {
     isLoading: isLoadingSchoolYear,
     isFetching: isFetchingSchoolYear,
@@ -63,17 +91,19 @@ const Classes = () => {
     "get",
     "school-year",
   );
-
-  const {
-    isLoading: isLoadingClasses,
-    isFetching: isFetchingClasses,
-    error: errorClasses,
-    data: dataClasses,
-  } = useQueryData(
-    `${apiVersion}/controllers/developer/classes/classes.php`,
-    "get",
-    "classes",
+  const filterActiveSchoolYear = dataSchoolYear?.data.filter(
+    (data) => data.school_year_is_active == 1,
   );
+  // const {
+  //   isLoading: isLoadingClasses,
+  //   isFetching: isFetchingClasses,
+  //   error: errorClasses,
+  //   data: dataClasses,
+  // } = useQueryData(
+  //   `${apiVersion}/controllers/developer/classes/classes.php`,
+  //   "get",
+  //   "classes",
+  // );
   const {
     isLoading: isLoadingTeachers,
     isFetching: isFetchingTeachers,
@@ -92,14 +122,14 @@ const Classes = () => {
 
   const allClasses = result?.pages.flatMap((page) => page.data) ?? [];
   const classesArray =
-    allClasses.data?.map((item) => {
+    allClasses.map((item, key) => {
       return {
         ...item,
-        id: item.classes_aid,
-        classes_is_active: item.classes_is_active,
-        gradeSection: `${item.classes_grade} - ${item.classes_section}`,
-        adviser: `${item.classes_adviser}`,
-        noOfStudents: `${formatDate(item.school_year_start)} - ${formatDate(item.school_year_end)}`,
+        id: item?.classes_aid,
+        classes_is_active: item?.classes_is_active,
+        gradeSection: `${item?.classes_grade} - ${item?.classes_section}`,
+        adviser: `${item?.classes_adviser}`,
+        noOfStudents: `${formatDate(item?.school_year_start)} - ${formatDate(item?.school_year_end)}`,
         setIsAdd: (val) => dispatch(setIsAdd(val)),
         setIsArchive: (val) => dispatch(setIsArchive(val)),
         setIsRestore: (val) => dispatch(setIsRestore(val)),
@@ -124,7 +154,7 @@ const Classes = () => {
                 Note: The list for all classes will be available soon.
               </small>
             </div>
-            <div className="px-8 py-6">
+            <div className="px-8 pt-6">
               <div className="flex justify-end items-center">
                 <button
                   className="bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold px-5 py-2.5 rounded-xl shadow-md transition-all flex items-center gap-2"
@@ -140,49 +170,97 @@ const Classes = () => {
                 </button>
               </div>
             </div>
-            <div className="flex  px-8 pt-6">
-              <div className="flex items-center gap-2 text-dark">
+            <div className="block lg:flex px-8 pt-6 justify-items-center items-center align-middle justify-between">
+              <div className="block lg:flex w-full lg:w-auto gap-2 items-center align-middle text-dark relative">
                 <select
-                  className="filter-data"
+                  className="filter-data flex w-full mb-2 text-center"
                   onChange={(e) => {
-                    setFilterStatus(e.target.value);
+                    setFilterGrade(e.target.value);
                   }}
                 >
-                  <option>Grade 7</option>
-                  <option>Grade 8</option>
-                  <option>Grade 9</option>
-                  <option>Grade 10</option>
+                  <option value="">All  </option>
+                  <option value="Grade 7">Grade 7</option>
+                  <option value="Grade 8">Grade 8</option>
+                  <option value="Grade 9">Grade 9</option>
+                  <option value="Grade 10">Grade 10</option>
                 </select>
-                <select className="filter-data">
-                  <option>2025-2026</option>
-                  <option>2024-2025</option>
-                  <option>2023-2024</option>
+                <select
+                  className="filter-data w-full flex mb-2 text-center"
+                  onChange={(e) => {
+                    setFilterSchoolYear(e.target.value);
+                  }}
+                >
+                  {filterActiveSchoolYear?.map((item, key) => {
+                    return (
+                      <option key={key} value={item.school_year_aid}>
+                        {formatDate(item.school_year_start)} - {""}
+                        {formatDate(item.school_year_end)}
+                      </option>
+                    );
+                  })}
                 </select>
-                <div className="flex gap-3 border border-gray-300 rounded-lg px-4 py-[4.5px] ">
-                  <button className="statusBadge font-medium rounded-lg statusActive">
+
+                <div className="w-auto xl:w-auto flex items-center justify-center gap-3 border border-gray-300 rounded-lg px-4 py-[4.5px] mb-2">
+                  <button
+                    className="statusBadge font-medium rounded-lg "
+                    onClick={(e) => {
+                      setFilterStatus(e.target.value);
+                    }}
+                    value=""
+                  >
+                    All
+                  </button>
+                  <button
+                    className="statusBadge font-medium rounded-lg statusActive"
+                    onClick={(e) => {
+                      setFilterStatus(e.target.value);
+                    }}
+                    value="1"
+                  >
                     Active
                   </button>
-                  <button className="statusBadge font-medium rounded-lg">
-                    Archived
-                  </button>
-                  <button className="statusBadge font-medium rounded-lg">
+                  <button
+                    className="statusBadge font-medium rounded-lg statusInactive"
+                    onClick={(e) => {
+                      setFilterStatus(e.target.value);
+                    }}
+                    value="0"
+                  >
                     Inactive
                   </button>
                 </div>
-                <input type="text" placeholder="Search here..." />
+              </div>
+              <div className="relative w-full lg:w-auto">
+                <SearchBar
+                  search={search}
+                  result={[]}
+                  isFetching={isFetching}
+                />
               </div>
             </div>
             <ClassesCard
               itemEdit={itemEdit}
               setItemEdit={setItemEdit}
-              isLoading={isLoadingClasses}
-              isFetching={isFetchingClasses}
-              error={errorClasses}
+              isLoading={status == "pending"}
+              isFetching={isFetching}
+              error={error}
               data={classesArray}
               dataItem={itemEdit}
               queryKey={["classes", ""]}
               pathUrl={`controllers/developer/classes`}
             />
+            <div>
+              <Loadmore
+                fetchNextPage={fetchNextPage}
+                isFetchingNextPage={isFetchingNextPage}
+                hasNextPage={hasNextPage}
+                result={result}
+                setPage={setPage}
+                page={page}
+                refView={ref}
+                isSearch={store.isSearch}
+              />
+            </div>
           </>
         )}
       </Layout>

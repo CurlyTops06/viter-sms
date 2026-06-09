@@ -1,5 +1,5 @@
 import useQueryData from "@/functions/custom-hooks/useQueryData";
-import { apiVersion } from "@/functions/functions-general";
+import { apiVersion, formatDate } from "@/functions/functions-general";
 import NoData from "@/partials/NoData";
 import ServerError from "@/partials/ServerError";
 import FetchingSpinner from "@/partials/spinners/FetchingSpinner";
@@ -13,6 +13,11 @@ import {
 import { StoreContext } from "@/store/StoreContext";
 import React from "react";
 import SchoolYearCard from "./SchoolYearCard";
+import { useInView } from "react-intersection-observer";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import Loadmore from "@/partials/Loadmore";
+import { queryDataInfinite } from "@/functions/custom-hooks/queryDataInfinite";
+import SearchBar from "@/partials/SearchBar";
 
 const SchoolYearList = ({
   itemEdit,
@@ -21,25 +26,73 @@ const SchoolYearList = ({
   pathUrl = "",
 }) => {
   const { store, dispatch } = React.useContext(StoreContext);
+  const [filterStatus, setFilterStatus] = React.useState("");
+  const search = React.useRef({ value: "" });
+  const { ref, inView } = useInView();
+  const [page, setPage] = React.useState(1);
   const deletePathUrl = pathUrl.split("/");
   const deleteLastIndex = deletePathUrl[deletePathUrl.length - 1];
-  const {
-    isLoading,
-    isFetching,
-    error,
-    data: dataSchoolYear,
-  } = useQueryData(
-    `${apiVersion}/controllers/developer/school-year/school-year.php`,
-    "get",
-    "school-year",
-  );
+  // const {
+  //   isLoading,
+  //   isFetching,
+  //   error,
+  //   data: dataSchoolYear,
+  // } = useQueryData(
+  //   `${apiVersion}/controllers/developer/school-year/school-year.php`,
+  //   "get",
+  //   "school-year",
+  // );
 
+  const {
+    data: result,
+    isLoading: isLoading,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetching,
+    isFetchingNextPage,
+    status,
+  } = useInfiniteQuery({
+    queryKey: [
+      "school-year",
+      search?.current.value,
+      store.isSearch,
+      filterStatus,
+    ],
+    queryFn: async ({ pageParam = 1 }) =>
+      await queryDataInfinite(
+        `${apiVersion}/controllers/developer/school-year/page.php?start=${pageParam}`,
+        store.isSearch,
+        {
+          filterStatus,
+          searchValue: search?.current.value,
+        },
+        "post",
+      ),
+    getNextPageParam: (lastPage) => {
+      if (lastPage.page < lastPage.total) {
+        return lastPage.page + lastPage.count;
+      }
+      return; //null || undefined
+    },
+  });
+
+  React.useEffect(() => {
+    if (inView) {
+      setPage((prev) => prev + 1);
+      fetchNextPage();
+    }
+  }, [inView]);
+
+  const allSchoolYear = result?.pages.flatMap((page) => page.data) ?? [];
   const schoolYearArray =
-    dataSchoolYear?.data.map((item) => {
+    allSchoolYear.map((item) => {
       return {
         ...item,
-        id: item.school_year_aid,
-
+        id: item?.school_year_aid,
+        school_year_is_active: item?.school_year_is_active,
+        school_year_start: `${item?.school_year_start}`,
+        school_year_end: `${item?.school_year_end}`,
         setIsAdd: (val) => dispatch(setIsAdd(val)),
         setIsArchive: (val) => dispatch(setIsArchive(val)),
         setIsRestore: (val) => dispatch(setIsRestore(val)),
@@ -48,28 +101,72 @@ const SchoolYearList = ({
       };
     }) ?? [];
 
+  const {
+    isLoading: isLoadingSchoolYear,
+    isFetching: isFetchingSchoolYear,
+    error: errorSchoolYear,
+    data: dataSchoolYear,
+  } = useQueryData(
+    `${apiVersion}/controllers/developer/school-year/school-year.php`,
+    "get",
+    "school-year",
+  );
+  const filterActiveSchoolYear = dataSchoolYear?.data.filter(
+    (data) => data.school_year_is_active == 1,
+  );
+
   return (
     <>
       {/* filter */}
-      <div className="flex  px-8 pt-6">
-        <div className="flex items-center gap-2 text-dark">
-          <select className="filter-data">
-            <option>2025-2026</option>
-            <option>2024-2025</option>
-            <option>2023-2024</option>
+      <div className="block lg:flex  px-8 pt-6">
+        <div className="block lg:flex w-full items-center gap-2 text-dark">
+          <select
+            className="filter-data w-full lg:w-auto text-center mb-2"
+            onChange={(e) => {}}
+          >
+            {filterActiveSchoolYear?.map((item, key) => {
+              return (
+                <option key={key} value={item.school_year_aid}>
+                  {formatDate(item.school_year_start)} - {""}
+                  {formatDate(item.school_year_end)}
+                </option>
+              );
+            })}
           </select>
-          <div className="flex gap-3 border border-gray-300 rounded-lg px-4 py-[4.5px] ">
-            <button className="statusBadge font-medium rounded-lg statusActive">
+          <div className="flex gap-3 w-full lg:w-auto mb-2 items-center justify-center border border-gray-300 rounded-lg px-4 py-[4.5px] ">
+            <button
+              className="statusBadge font-medium rounded-lg"
+              onClick={(e) => {
+                setFilterStatus(e.target.value);
+              }}
+              value=""
+            >
+              All
+            </button>
+            <button
+              className="statusBadge font-medium rounded-lg statusActive"
+              onClick={(e) => {
+                setFilterStatus(e.target.value);
+              }}
+              value="1"
+            >
               Active
             </button>
-            <button className="statusBadge font-medium rounded-lg">
-              Archived
-            </button>
-            <button className="statusBadge font-medium rounded-lg">
+            <button
+              className="statusBadge font-medium rounded-lg statusInactive"
+              onClick={(e) => {
+                setFilterStatus(e.target.value);
+              }}
+              value="0"
+            >
               Inactive
             </button>
           </div>
-          <input type="text" placeholder="Search here..." />
+        </div>
+        <div>
+          <div className="relative w-full lg:w-auto">
+            <SearchBar search={search} result={[]} isFetching={isFetching} />
+          </div>
         </div>
       </div>
 
@@ -90,10 +187,13 @@ const SchoolYearList = ({
             <NoData />
           </div>
         ) : (
-          schoolYearArray.map((c) => (
+          schoolYearArray.map((c, key) => (
             <SchoolYearCard
               key={c.id}
               item={c}
+              isLoading={status == "pending"}
+              isFetching={isFetching}
+              error={errorSchoolYear}
               data={schoolYearArray}
               deleteLastIndex={deleteLastIndex}
               pathUrl={pathUrl}
@@ -102,6 +202,18 @@ const SchoolYearList = ({
             />
           ))
         )}
+      </div>
+      <div>
+        <Loadmore
+          fetchNextPage={fetchNextPage}
+          isFetchingNextPage={isFetchingNextPage}
+          hasNextPage={hasNextPage}
+          result={result}
+          setPage={setPage}
+          page={page}
+          refView={ref}
+          isSearch={store.isSearch}
+        />
       </div>
     </>
   );

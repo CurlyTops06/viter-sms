@@ -22,6 +22,8 @@ if (isset($_SERVER['HTTP_AUTHORIZATION'])) {
         $val->start = $_GET['start'];
         $val->total = 3;
         $val->is_active = isset($data['filterStatus']) ? $data['filterStatus'] : '';
+        $val->is_grade = isset($data['filterGrade']) ? $data['filterGrade'] : '';
+        $val->is_school_year = isset($data['filterSchoolYear']) ? $data['filterSchoolYear'] : '';
         $val->search = isset($data['searchValue']) ? $data['searchValue'] : '';
 
         $query = checkReadLimit($val); //load limit data

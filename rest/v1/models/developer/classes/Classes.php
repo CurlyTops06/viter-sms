@@ -16,6 +16,8 @@ class Classes
 
     public $is_active = '';
     public $search = '';
+    public $is_grade = '';
+    public $is_school_year = '';
     public $start;
     public $total;
 
@@ -93,6 +95,85 @@ class Classes
         } catch (PDOException $e) {
             $query = false;
             returnHandleError($e);
+        }
+        return $query;
+    }
+
+    public function readLimit()
+    {
+        try {
+            $sql = "select ";
+            $sql .= "classes.*, ";
+            // $sql .= "schoolYear.* ";
+            $sql .= "schoolYear.school_year_start, ";
+            $sql .= "schoolYear.school_year_end, ";
+            $sql .= "teachers.teachers_first_name, ";
+            $sql .= "teachers.teachers_last_name ";
+            $sql .= "from {$this->tblClasses} as classes, ";
+            $sql .= "{$this->tblSchoolYear} as schoolYear, ";
+            $sql .= "{$this->tblTeachers} as teachers ";
+            $sql .= "where ";
+            $sql .= "classes.classes_year_id = schoolYear.school_year_aid ";
+            $sql .= "and teachers.teachers_aid = classes.classes_adviser ";
+            //For Filter
+            $sql .=  $this->is_active != '' ? "and classes_is_active = :classes_is_active " : "";
+            // For Search
+            $sql .=  $this->search != '' ? "and ( " : "";
+            $sql .=  $this->search != '' ? "classes_grade LIKE :classes_grade " : "";
+            $sql .=  $this->search != '' ? "or classes_section LIKE :classes_section " : "";
+            $sql .=  $this->search != '' ? "or CONCAT(classes_section,' ',classes_grade) LIKE :full_section " : "";
+            $sql .=  $this->search != '' ? "or CONCAT(classes_grade,' ',classes_section) LIKE :full_grade " : "";
+            $sql .=  $this->search != '' ? "or CONCAT(classes_section,' - ',classes_grade) LIKE :full_section_coma " : "";
+            $sql .=  $this->search != '' ? "or CONCAT(classes_grade,' - ',classes_section) LIKE :full_grade_coma " : "";
+            $sql .=  $this->search != '' ? " ) " : "";
+            $sql .=  $this->is_grade != '' ? "and ( " : "";
+            $sql .=  $this->is_grade != '' ? "classes_grade LIKE :classes_grade " : "";
+            $sql .=  $this->is_grade != '' ? "or classes_section LIKE :classes_section " : "";
+            $sql .=  $this->is_grade != '' ? "or CONCAT(classes_section,' ',classes_grade) LIKE :full_section " : "";
+            $sql .=  $this->is_grade != '' ? "or CONCAT(classes_grade,' ',classes_section) LIKE :full_grade " : "";
+            $sql .=  $this->is_grade != '' ? "or CONCAT(classes_section,' - ',classes_grade) LIKE :full_section_coma " : "";
+            $sql .=  $this->is_grade != '' ? "or CONCAT(classes_grade,' - ',classes_section) LIKE :full_grade_coma " : "";
+            $sql .=  $this->is_grade != '' ? " ) " : "";
+            $sql .=  $this->is_school_year != '' ? "and ( " : "";
+            $sql .=  $this->is_school_year != '' ? "classes_year_id = :classes_year_id " : "";
+            $sql .=  $this->is_school_year != '' ? " ) " : "";
+            $sql .= "order by ";
+            $sql .= "classes_aid ";
+            // For Load more like facebook
+            $sql .= "limit :start, ";
+            $sql .= ":total";
+            $query = $this->connection->prepare($sql);
+            $query->execute([
+                //for filter
+                ...$this->is_active != '' ? [
+                    "classes_is_active" => $this->is_active,
+                ] : [],
+                //for filter
+                ...$this->search != '' ? [
+                    "classes_grade" => "%{$this->search}%",
+                    "classes_section" => "%{$this->search}%",
+                    "full_section" => "%{$this->search}%",
+                    "full_grade" => "%{$this->search}%",
+                    "full_section_coma" => "%{$this->search}%",
+                    "full_grade_coma" => "%{$this->search}%",
+                ] : [],
+                ...$this->is_grade != '' ? [
+                    "classes_grade" => "%{$this->is_grade}%",
+                    "classes_section" => "%{$this->is_grade}%",
+                    "full_section" => "%{$this->is_grade}%",
+                    "full_grade" => "%{$this->is_grade}%",
+                    "full_section_coma" => "%{$this->is_grade}%",
+                    "full_grade_coma" => "%{$this->is_grade}%",
+                ] : [],
+                ...$this->is_school_year != '' ? [
+                    "classes_year_id" => "%{$this->is_school_year}%",
+                ] : [],
+                //for load more like facebook
+                "start" => $this->start - 1,
+                "total" => $this->total,
+            ]);
+        } catch (PDOException $e) {
+            $query = false;
         }
         return $query;
     }
