@@ -27,6 +27,7 @@ const SchoolYearList = ({
 }) => {
   const { store, dispatch } = React.useContext(StoreContext);
   const [filterStatus, setFilterStatus] = React.useState("");
+  const [filterSchoolYear, setFilterSchoolYear] = React.useState("");
   const search = React.useRef({ value: "" });
   const { ref, inView } = useInView();
   const [page, setPage] = React.useState(1);
@@ -58,6 +59,7 @@ const SchoolYearList = ({
       search?.current.value,
       store.isSearch,
       filterStatus,
+      filterSchoolYear,
     ],
     queryFn: async ({ pageParam = 1 }) =>
       await queryDataInfinite(
@@ -66,6 +68,7 @@ const SchoolYearList = ({
         {
           filterStatus,
           searchValue: search?.current.value,
+          filterSchoolYear,
         },
         "post",
       ),
@@ -118,26 +121,34 @@ const SchoolYearList = ({
   return (
     <>
       {/* filter */}
-      <div className="block lg:flex  px-8 pt-6">
-        <div className="block lg:flex w-full items-center gap-2 text-dark">
-          <select
-            className="filter-data w-full lg:w-auto text-center mb-2"
-            onChange={(e) => {}}
-          >
-            {filterActiveSchoolYear?.map((item, key) => {
-              return (
-                <option key={key} value={item.school_year_aid}>
-                  {formatDate(item.school_year_start)} - {""}
-                  {formatDate(item.school_year_end)}
-                </option>
-              );
-            })}
-          </select>
-          <div className="flex gap-3 w-full lg:w-auto mb-2 items-center justify-center border border-gray-300 rounded-lg px-4 py-[4.5px] ">
+      <div className="block lg:flex w-full justify-between px-8 pt-6">
+        <div className="block lg:flex w-full lg:w-fit items-center gap-2 text-dark">
+          <div className="relative">
+            <label htmlFor="">School Year</label>
+            <select
+              className="filter-data w-full lg:w-auto text-center lg:text-left mb-2"
+              onChange={(e) => {
+                setFilterSchoolYear(e.target.value);
+              }}
+            >
+              <option value="">All</option>
+              {filterActiveSchoolYear?.map((item, key) => {
+                return (
+                  <option key={key} value={item.school_year_aid}>
+                    {formatDate(item.school_year_start)} - {""}
+                    {formatDate(item.school_year_end)}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
+          <div className="flex gap-3 w-full lg:w-auto mb-2 items-center justify-center border border-gray-300 rounded-lg px-4 py-[4.5px] relative">
+            <label htmlFor="">Status</label>
             <button
-              className="statusBadge font-medium rounded-lg"
+              className="statusBadge font-medium rounded-lg "
               onClick={(e) => {
                 setFilterStatus(e.target.value);
+                console.log(e.target.value);
               }}
               value=""
             >
@@ -147,6 +158,7 @@ const SchoolYearList = ({
               className="statusBadge font-medium rounded-lg statusActive"
               onClick={(e) => {
                 setFilterStatus(e.target.value);
+                console.log(e.target.value);
               }}
               value="1"
             >
@@ -156,6 +168,7 @@ const SchoolYearList = ({
               className="statusBadge font-medium rounded-lg statusInactive"
               onClick={(e) => {
                 setFilterStatus(e.target.value);
+                console.log(e.target.value);
               }}
               value="0"
             >
@@ -163,10 +176,14 @@ const SchoolYearList = ({
             </button>
           </div>
         </div>
-        <div>
-          <div className="relative w-full lg:w-auto">
-            <SearchBar search={search} result={[]} isFetching={isFetching} />
-          </div>
+
+        <div className="w-full lg:w-auto">
+          <SearchBar
+            search={search}
+            result={[]}
+            isFetching={isFetching}
+            placeholder="Format: YYYY-MM-DD"
+          />
         </div>
       </div>
 

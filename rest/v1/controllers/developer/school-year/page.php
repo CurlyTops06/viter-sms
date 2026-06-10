@@ -17,6 +17,7 @@ if (isset($_SERVER['HTTP_AUTHORIZATION'])) {
         $val->total = 3;
         $val->is_active = isset($data['filterStatus']) ? $data['filterStatus'] : '';
         $val->search = isset($data['searchValue']) ? $data['searchValue'] : '';
+        $val->search_school_year = isset($data['filterSchoolYear']) ? $data['filterSchoolYear'] : '';
 
         $query = checkReadLimit($val);
         $total_result = checkReadAll($val);

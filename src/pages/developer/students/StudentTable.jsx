@@ -145,6 +145,8 @@ const studentColumns = [
 const StudentsTable = ({ itemEdit, setItemEdit }) => {
   const { store, dispatch } = React.useContext(StoreContext);
   const [filterStatus, setFilterStatus] = React.useState("");
+  const [filterGrade, setFilterGrade] = React.useState("");
+  const [filterSection, setFilterSection] = React.useState("");
   const search = React.useRef({ value: "" });
   const { ref, inView } = useInView();
   const [page, setPage] = React.useState(1);
@@ -158,7 +160,14 @@ const StudentsTable = ({ itemEdit, setItemEdit }) => {
     isFetchingNextPage,
     status,
   } = useInfiniteQuery({
-    queryKey: ["students", search?.current.value, store.isSearch, filterStatus],
+    queryKey: [
+      "students",
+      search?.current.value,
+      store.isSearch,
+      filterStatus,
+      filterGrade,
+      filterSection,
+    ],
     queryFn: async ({ pageParam = 1 }) =>
       await queryDataInfinite(
         `${apiVersion}/controllers/developer/students/page.php?start=${pageParam}`, //api path
@@ -166,6 +175,8 @@ const StudentsTable = ({ itemEdit, setItemEdit }) => {
         {
           filterStatus,
           searchValue: search?.current.value,
+          filterGrade,
+          filterSection,
         },
         "post",
       ),
@@ -219,15 +230,15 @@ const StudentsTable = ({ itemEdit, setItemEdit }) => {
   return (
     <>
       {/* Filter and Search */}
-      <div className="flex flex-wrap items-center justify-between gap-2 py-2 text-dark">
+      <div className="flex flex-wrap items-center justify-between py-2 text-dark">
         {/* Filter */}
-        <div>
+        <div className="block lg:flex w-full lg:w-auto gap-2 items-center text-center lg:text-left align-middle text-dark relative">
           <div className="relative">
             <label htmlFor="">Status</label>
             <select
               name=""
               id=""
-              className="w-28"
+              className="w-full mb-2 text-center lg:text-left"
               onChange={(e) => {
                 setFilterStatus(e.target.value);
               }}
@@ -239,9 +250,37 @@ const StudentsTable = ({ itemEdit, setItemEdit }) => {
               </optgroup>
             </select>
           </div>
+          <div className="relative">
+            <label htmlFor="">Grade</label>
+            <select
+              className="filter-data flex w-full xl:w-30 mb-2 text-center lg:text-left"
+              onChange={(e) => {
+                setFilterGrade(e.target.value);
+              }}
+            >
+              <option value="">All </option>
+              <option value="Grade 7">Grade 7</option>
+              <option value="Grade 8">Grade 8</option>
+              <option value="Grade 9">Grade 9</option>
+              <option value="Grade 10">Grade 10</option>
+            </select>
+          </div>
+          <div className="relative">
+            <label htmlFor="">Section</label>
+            <select
+              className="filter-data flex w-full xl:w-30 mb-2 text-center lg:text-left"
+              onChange={(e) => {
+                setFilterSection(e.target.value);
+              }}
+            >
+              <option value="">All </option>
+              <option value="Section A">Section A</option>
+              <option value="Section B">Section B</option>
+            </select>
+          </div>
         </div>
         {/* Search */}
-        <div className="relative">
+        <div className="relative w-full lg:w-auto">
           <SearchBar search={search} result={[]} isFetching={isFetching} />
         </div>
       </div>

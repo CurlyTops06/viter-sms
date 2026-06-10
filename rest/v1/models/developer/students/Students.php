@@ -18,6 +18,8 @@ class Students
 
     public $is_active = '';
     public $search = '';
+    public $grade = '';
+    public $section = '';
     public $start;
     public $total;
 
@@ -128,10 +130,19 @@ class Students
             $sql .=  $this->search != '' ? "and ( " : "";
             $sql .=  $this->search != '' ? "students_first_name LIKE :students_first_name " : "";
             $sql .=  $this->search != '' ? "or students_last_name LIKE :students_last_name " : "";
+            $sql .=  $this->search != '' ? "or students_id LIKE :students_id " : "";
+            $sql .=  $this->search != '' ? "or students_grade LIKE :students_grade " : "";
+            $sql .=  $this->search != '' ? "or students_section LIKE :students_section " : "";
             $sql .=  $this->search != '' ? "or CONCAT(students_last_name,' ',students_first_name) LIKE :full_last_name " : "";
             $sql .=  $this->search != '' ? "or CONCAT(students_first_name,' ',students_last_name) LIKE :full_first_name " : "";
             $sql .=  $this->search != '' ? "or CONCAT(students_last_name,', ',students_first_name) LIKE :full_last_name_coma " : "";
             $sql .=  $this->search != '' ? " ) " : "";
+            $sql .=  $this->grade != '' ? "and ( " : "";
+            $sql .=  $this->grade != '' ? "students_grade LIKE :students_grade " : "";
+            $sql .=  $this->grade != '' ? " ) " : "";
+            $sql .=  $this->section != '' ? "and ( " : "";
+            $sql .=  $this->section != '' ? "students_section LIKE :students_section " : "";
+            $sql .=  $this->section != '' ? " ) " : "";
             $sql .= "order by ";
             $sql .= "students_aid asc ";
             // For Load more like facebook
@@ -147,9 +158,18 @@ class Students
                 ...$this->search != '' ? [
                     "students_first_name" => "%{$this->search}%",
                     "students_last_name" => "%{$this->search}%",
+                    "students_id" => "%{$this->search}%",
+                    "students_grade" => "%{$this->search}%",
+                    "students_section" => "%{$this->search}%",
                     "full_last_name" => "%{$this->search}%",
                     "full_first_name" => "%{$this->search}%",
                     "full_last_name_coma" => "%{$this->search}%",
+                ] : [],
+                ...$this->grade != '' ? [
+                    "students_grade" => "%{$this->grade}%",
+                ] : [],
+                ...$this->section != '' ? [
+                    "students_section" => "%{$this->section}%",
                 ] : [],
                 //for load more like facebook
                 "start" => $this->start - 1,

@@ -23,6 +23,8 @@ if (isset($_SERVER['HTTP_AUTHORIZATION'])) {
         $val->total = 3;
         $val->is_active = isset($data['filterStatus']) ? $data['filterStatus'] : '';
         $val->search = isset($data['searchValue']) ? $data['searchValue'] : '';
+        $val->grade = isset($data['filterGrade']) ? $data['filterGrade'] : '';
+        $val->section = isset($data['filterSection']) ? $data['filterSection'] : '';
 
         $query = checkReadLimit($val); //load limit data
         $total_result = checkReadAll($val); //load all data

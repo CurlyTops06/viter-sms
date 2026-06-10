@@ -18,6 +18,7 @@ class Teachers
 
     public $is_active = '';
     public $search = '';
+    public $subject = '';
     public $start;
     public $total;
 
@@ -128,10 +129,15 @@ class Teachers
             $sql .=  $this->search != '' ? "and ( " : "";
             $sql .=  $this->search != '' ? "teachers_first_name LIKE :teachers_first_name " : "";
             $sql .=  $this->search != '' ? "or teachers_last_name LIKE :teachers_last_name " : "";
+            $sql .=  $this->search != '' ? "or teachers_email LIKE :teachers_email " : "";
+            $sql .=  $this->search != '' ? "or teachers_subject LIKE :teachers_subject " : "";
             $sql .=  $this->search != '' ? "or CONCAT(teachers_last_name,' ',teachers_first_name) LIKE :full_last_name " : "";
             $sql .=  $this->search != '' ? "or CONCAT(teachers_first_name,' ',teachers_last_name) LIKE :full_first_name " : "";
             $sql .=  $this->search != '' ? "or CONCAT(teachers_last_name,', ',teachers_first_name) LIKE :full_last_name_coma " : "";
             $sql .=  $this->search != '' ? " ) " : "";
+            $sql .=  $this->subject != '' ? "and ( " : "";
+            $sql .=  $this->subject != '' ? "teachers_subject LIKE :teachers_subject " : "";
+            $sql .=  $this->subject != '' ? " ) " : "";
             $sql .= "order by ";
             $sql .= "teachers_aid asc ";
             // For Load more like facebook
@@ -147,9 +153,14 @@ class Teachers
                 ...$this->search != '' ? [
                     "teachers_first_name" => "%{$this->search}%",
                     "teachers_last_name" => "%{$this->search}%",
+                    "teachers_email" => "%{$this->search}%",
+                    "teachers_subject" => "%{$this->search}%",
                     "full_last_name" => "%{$this->search}%",
                     "full_first_name" => "%{$this->search}%",
                     "full_last_name_coma" => "%{$this->search}%",
+                ] : [],
+                ...$this->subject != '' ? [
+                    "teachers_subject" => "%{$this->subject}%",
                 ] : [],
                 //for load more like facebook
                 "start" => $this->start - 1,

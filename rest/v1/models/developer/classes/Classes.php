@@ -16,8 +16,10 @@ class Classes
 
     public $is_active = '';
     public $search = '';
-    public $is_grade = '';
-    public $is_school_year = '';
+    public $search_grade = '';
+    public $search_adviser = '';
+    public $search_section = '';
+    public $search_school_year = '';
     public $start;
     public $total;
 
@@ -126,17 +128,18 @@ class Classes
             $sql .=  $this->search != '' ? "or CONCAT(classes_section,' - ',classes_grade) LIKE :full_section_coma " : "";
             $sql .=  $this->search != '' ? "or CONCAT(classes_grade,' - ',classes_section) LIKE :full_grade_coma " : "";
             $sql .=  $this->search != '' ? " ) " : "";
-            $sql .=  $this->is_grade != '' ? "and ( " : "";
-            $sql .=  $this->is_grade != '' ? "classes_grade LIKE :classes_grade " : "";
-            $sql .=  $this->is_grade != '' ? "or classes_section LIKE :classes_section " : "";
-            $sql .=  $this->is_grade != '' ? "or CONCAT(classes_section,' ',classes_grade) LIKE :full_section " : "";
-            $sql .=  $this->is_grade != '' ? "or CONCAT(classes_grade,' ',classes_section) LIKE :full_grade " : "";
-            $sql .=  $this->is_grade != '' ? "or CONCAT(classes_section,' - ',classes_grade) LIKE :full_section_coma " : "";
-            $sql .=  $this->is_grade != '' ? "or CONCAT(classes_grade,' - ',classes_section) LIKE :full_grade_coma " : "";
-            $sql .=  $this->is_grade != '' ? " ) " : "";
-            $sql .=  $this->is_school_year != '' ? "and ( " : "";
-            $sql .=  $this->is_school_year != '' ? "classes_year_id = :classes_year_id " : "";
-            $sql .=  $this->is_school_year != '' ? " ) " : "";
+            $sql .=  $this->search_grade != '' ? "and ( " : "";
+            $sql .=  $this->search_grade != '' ? "classes_grade LIKE :classes_grade " : "";
+            $sql .=  $this->search_grade != '' ? " ) " : "";
+            $sql .=  $this->search_section != '' ? "and ( " : "";
+            $sql .=  $this->search_section != '' ? "classes_section LIKE :classes_section " : "";
+            $sql .=  $this->search_section != '' ? " ) " : "";
+            $sql .=  $this->search_school_year != '' ? "and ( " : "";
+            $sql .=  $this->search_school_year != '' ? "classes_year_id LIKE :classes_year_id " : "";
+            $sql .=  $this->search_school_year != '' ? " ) " : "";
+            $sql .=  $this->search_adviser != '' ? "and ( " : "";
+            $sql .=  $this->search_adviser != '' ? "teachers_aid LIKE :teachers_aid " : "";
+            $sql .=  $this->search_adviser != '' ? " ) " : "";
             $sql .= "order by ";
             $sql .= "classes_aid ";
             // For Load more like facebook
@@ -157,16 +160,17 @@ class Classes
                     "full_section_coma" => "%{$this->search}%",
                     "full_grade_coma" => "%{$this->search}%",
                 ] : [],
-                ...$this->is_grade != '' ? [
-                    "classes_grade" => "%{$this->is_grade}%",
-                    "classes_section" => "%{$this->is_grade}%",
-                    "full_section" => "%{$this->is_grade}%",
-                    "full_grade" => "%{$this->is_grade}%",
-                    "full_section_coma" => "%{$this->is_grade}%",
-                    "full_grade_coma" => "%{$this->is_grade}%",
+                ...$this->search_grade != '' ? [
+                    "classes_grade" => "%{$this->search_grade}%",
                 ] : [],
-                ...$this->is_school_year != '' ? [
-                    "classes_year_id" => "%{$this->is_school_year}%",
+                ...$this->search_section != '' ? [
+                    "classes_section" => "%{$this->search_section}%",
+                ] : [],
+                ...$this->search_school_year != '' ? [
+                    "classes_year_id" => "%{$this->search_school_year}%",
+                ] : [],
+                ...$this->search_adviser != '' ? [
+                    "teachers_aid" => "%{$this->search_adviser}%",
                 ] : [],
                 //for load more like facebook
                 "start" => $this->start - 1,

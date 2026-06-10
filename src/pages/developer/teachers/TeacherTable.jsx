@@ -141,6 +141,7 @@ const TeacherColumns = [
 const TeacherTable = ({ itemEdit, setItemEdit }) => {
   const { store, dispatch } = React.useContext(StoreContext);
   const [filterStatus, setFilterStatus] = React.useState("");
+  const [filterSubject, setFilterSubject] = React.useState("");
   const search = React.useRef({ value: "" });
   const { ref, inView } = useInView();
   const [page, setPage] = React.useState(1);
@@ -154,13 +155,20 @@ const TeacherTable = ({ itemEdit, setItemEdit }) => {
     isFetchingNextPage,
     status,
   } = useInfiniteQuery({
-    queryKey: ["teachers", search?.current.value, store.isSearch, filterStatus],
+    queryKey: [
+      "teachers",
+      search?.current.value,
+      store.isSearch,
+      filterStatus,
+      filterSubject,
+    ],
     queryFn: async ({ pageParam = 1 }) =>
       await queryDataInfinite(
         `${apiVersion}/controllers/developer/teachers/page.php?start=${pageParam}`,
         store.isSearch,
         {
           filterStatus,
+          filterSubject,
           searchValue: search?.current.value,
         },
         "post",
@@ -173,6 +181,16 @@ const TeacherTable = ({ itemEdit, setItemEdit }) => {
     },
   });
 
+  const {
+    isLoading: isLoadingTeachers,
+    isFetching: isFetchingTeachers,
+    error: errorTeachers,
+    data: dataTeachers,
+  } = useQueryData(
+    `${apiVersion}/controllers/developer/teachers/teachers.php`,
+    "get",
+    "teachers",
+  );
   React.useEffect(() => {
     if (inView) {
       setPage((prev) => prev + 1);
@@ -214,22 +232,44 @@ const TeacherTable = ({ itemEdit, setItemEdit }) => {
   return (
     <>
       {/* Filter and Search */}
-      <div className="flex flex-wrap items-center justify-between gap-2 py-2 text-dark">
-        <div>
-          <div className="relative">
+      <div className="block xl:flex w-full flex-wrap items-center justify-between gap-2 py-2 text-dark">
+        <div className="block xl:flex gap-2">
+          <div className="relative mb-2">
             <label htmlFor="">Status</label>
             <select
               name=""
               id=""
-              className="w-28"
+              className="w-full text-center xl:text-left"
               onChange={(e) => {
                 setFilterStatus(e.target.value);
               }}
             >
-              <optgroup label="Select Status">
+              <optgroup label="Select Subject">
                 <option value="">All</option>
                 <option value="1">Active</option>
                 <option value="0">Inactive</option>
+              </optgroup>
+            </select>
+          </div>
+          <div className="relative mb-2">
+            <label htmlFor="">Subject</label>
+            <select
+              name=""
+              id=""
+              className="w-full text-center xl:text-left"
+              onChange={(e) => {
+                setFilterSubject(e.target.value);
+              }}
+            >
+              <optgroup label="Select Subject">
+                <option value="">All</option>
+                {dataTeachers?.data?.map((item, key) => {
+                  return (
+                    <option key={key} value={item.teachers_subject}>
+                      {item.teachers_subject}
+                    </option>
+                  );
+                })}
               </optgroup>
             </select>
           </div>

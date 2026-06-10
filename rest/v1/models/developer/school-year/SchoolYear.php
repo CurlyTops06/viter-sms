@@ -14,6 +14,7 @@ class SchoolYear
 
     public $is_active = '';
     public $search = '';
+    public $search_school_year = '';
     public $start;
     public $total;
 
@@ -79,19 +80,21 @@ class SchoolYear
             $sql = "select ";
             $sql .= "* ";
             $sql .= "from {$this->tblSchoolYear} ";
-            // $sql .= "where ";
+            $sql .= "where true ";
             // $sql .= "school_year_aid = school_year_aid ";
             //For Filter
             $sql .=  $this->is_active != '' ? "and school_year_is_active = :school_year_is_active " : "";
             // For Search
             $sql .=  $this->search != '' ? "and ( " : "";
-            $sql .=  $this->search != '' ? "school_year_aid = :search " : "";
-            // $sql .=  $this->search != '' ? "school_year_start LIKE :school_year_start " : "";
-            // $sql .=  $this->search != '' ? "or school_year_end LIKE :school_year_end " : "";
-            // $sql .=  $this->search != '' ? "or CONCAT(school_year_start,' ',school_year_end) LIKE :full_school_year_start " : "";
-            // $sql .=  $this->search != '' ? "or CONCAT(school_year_end,' ',school_year_start) LIKE :full_school_year_end " : "";
-            // $sql .=  $this->search != '' ? "or CONCAT(school_year_start,' - ',school_year_end) LIKE :full_school_year_coma " : "";
+            $sql .=  $this->search != '' ? "school_year_start LIKE :school_year_start " : "";
+            $sql .=  $this->search != '' ? "or school_year_end LIKE :school_year_end " : "";
+            $sql .=  $this->search != '' ? "or CONCAT(school_year_start,' ',school_year_end) LIKE :full_school_year_start " : "";
+            $sql .=  $this->search != '' ? "or CONCAT(school_year_end,' ',school_year_start) LIKE :full_school_year_end " : "";
+            $sql .=  $this->search != '' ? "or CONCAT(school_year_start,' - ',school_year_end) LIKE :full_school_year_coma " : "";
             $sql .=  $this->search != '' ? " ) " : "";
+            $sql .=  $this->search_school_year != '' ? "and ( " : "";
+            $sql .=  $this->search_school_year != '' ? "school_year_aid LIKE :school_year_aid " : "";
+            $sql .=  $this->search_school_year != '' ? " ) " : "";
             $sql .= "order by ";
             // $sql .= "students_first_name, ";
             // $sql .= "students_last_name ";
@@ -107,12 +110,14 @@ class SchoolYear
                 ] : [],
                 //for filter
                 ...$this->search != '' ? [
-                    "school_year_aid" => "%{$this->search}%",
-                    // "school_year_start" => "%{$this->search}%",
-                    // "school_year_end" => "%{$this->search}%",
-                    // "full_school_year_start" => "%{$this->search}%",
-                    // "full_school_year_end" => "%{$this->search}%",
-                    // "full_school_year_coma" => "%{$this->search}%",
+                    "school_year_start" => "%{$this->search}%",
+                    "school_year_end" => "%{$this->search}%",
+                    "full_school_year_start" => "%{$this->search}%",
+                    "full_school_year_end" => "%{$this->search}%",
+                    "full_school_year_coma" => "%{$this->search}%",
+                ] : [],
+                ...$this->search_school_year != '' ? [
+                    "school_year_aid" => "%{$this->search_school_year}%",
                 ] : [],
                 //for load more like facebook
                 "start" => $this->start - 1,

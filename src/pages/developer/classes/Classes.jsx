@@ -31,7 +31,9 @@ const Classes = () => {
   const { store, dispatch } = React.useContext(StoreContext);
   const [filterStatus, setFilterStatus] = React.useState("");
   const [filterGrade, setFilterGrade] = React.useState("");
+  const [filterAdviser, setFilterAdviser] = React.useState("");
   const [filterSchoolYear, setFilterSchoolYear] = React.useState("");
+  const [filterSection, setFilterSection] = React.useState("");
   const search = React.useRef({ value: "" });
   const { ref, inView } = useInView();
   const [page, setPage] = React.useState(1);
@@ -52,7 +54,9 @@ const Classes = () => {
       store.isSearch,
       filterStatus,
       filterGrade,
+      filterAdviser,
       filterSchoolYear,
+      filterSection,
     ],
     queryFn: async ({ pageParam = 1 }) =>
       await queryDataInfinite(
@@ -62,7 +66,9 @@ const Classes = () => {
           filterStatus,
           searchValue: search?.current.value,
           filterGrade,
+          filterAdviser,
           filterSchoolYear,
+          filterSection,
         },
         "post",
       ),
@@ -94,6 +100,7 @@ const Classes = () => {
   const filterActiveSchoolYear = dataSchoolYear?.data.filter(
     (data) => data.school_year_is_active == 1,
   );
+  console.log(filterActiveSchoolYear);
   // const {
   //   isLoading: isLoadingClasses,
   //   isFetching: isFetchingClasses,
@@ -113,6 +120,9 @@ const Classes = () => {
     `${apiVersion}/controllers/developer/teachers/teachers.php`,
     "get",
     "teachers",
+  );
+  const filterActiveTeachers = dataTeachers?.data.filter(
+    (data) => data.teachers_is_active == 1,
   );
   const { data: dataStudents } = useQueryData(
     `${apiVersion}/controllers/developer/students/students.php`,
@@ -172,35 +182,75 @@ const Classes = () => {
             </div>
             <div className="block lg:flex px-8 pt-6 justify-items-center items-center align-middle justify-between">
               <div className="block lg:flex w-full lg:w-auto gap-2 items-center align-middle text-dark relative">
-                <select
-                  className="filter-data flex w-full mb-2 text-center"
-                  onChange={(e) => {
-                    setFilterGrade(e.target.value);
-                  }}
-                >
-                  <option value="">All  </option>
-                  <option value="Grade 7">Grade 7</option>
-                  <option value="Grade 8">Grade 8</option>
-                  <option value="Grade 9">Grade 9</option>
-                  <option value="Grade 10">Grade 10</option>
-                </select>
-                <select
-                  className="filter-data w-full flex mb-2 text-center"
-                  onChange={(e) => {
-                    setFilterSchoolYear(e.target.value);
-                  }}
-                >
-                  {filterActiveSchoolYear?.map((item, key) => {
-                    return (
-                      <option key={key} value={item.school_year_aid}>
-                        {formatDate(item.school_year_start)} - {""}
-                        {formatDate(item.school_year_end)}
-                      </option>
-                    );
-                  })}
-                </select>
+                <div className="relative">
+                  <label htmlFor="">Grade</label>
+                  <select
+                    className="filter-data flex w-full xl:w-30 mb-2 text-center lg:text-left"
+                    onChange={(e) => {
+                      setFilterGrade(e.target.value);
+                    }}
+                  >
+                    <option value="">All </option>
+                    <option value="Grade 7">Grade 7</option>
+                    <option value="Grade 8">Grade 8</option>
+                    <option value="Grade 9">Grade 9</option>
+                    <option value="Grade 10">Grade 10</option>
+                  </select>
+                </div>
+                <div className="relative">
+                  <label htmlFor="">Section</label>
+                  <select
+                    className="filter-data flex w-full xl:w-30 mb-2 text-center lg:text-left"
+                    onChange={(e) => {
+                      setFilterSection(e.target.value);
+                    }}
+                  >
+                    <option value="">All </option>
+                    <option value="Section A">Section A</option>
+                    <option value="Section B">Section B</option>
+                  </select>
+                </div>
+                <div className="relative">
+                  <label htmlFor="">School Year</label>
+                  <select
+                    className="filter-data w-full flex mb-2 text-center lg:text-left"
+                    onChange={(e) => {
+                      setFilterSchoolYear(e.target.value);
+                    }}
+                  >
+                    <option value="">All</option>
+                    {filterActiveSchoolYear?.map((item, key) => {
+                      return (
+                        <option key={key} value={item.school_year_aid}>
+                          {formatDate(item.school_year_start)} - {""}
+                          {formatDate(item.school_year_end)}
+                        </option>
+                      );
+                    })}
+                  </select>
+                </div>
+                <div className="relative">
+                  <label htmlFor="">Adviser</label>
+                  <select
+                    className="filter-data w-full flex mb-2 text-center lg:text-left"
+                    onChange={(e) => {
+                      setFilterAdviser(e.target.value);
+                    }}
+                  >
+                    <option value="">All</option>
+                    {filterActiveTeachers?.map((item, key) => {
+                      return (
+                        <option key={key} value={item.teachers_aid}>
+                          {item.teachers_last_name}, {""}
+                          {item.teachers_first_name}
+                        </option>
+                      );
+                    })}
+                  </select>
+                </div>
 
-                <div className="w-auto xl:w-auto flex items-center justify-center gap-3 border border-gray-300 rounded-lg px-4 py-[4.5px] mb-2">
+                <div className="w-auto xl:w-auto flex items-center justify-center gap-3 border border-gray-300 rounded-lg px-4 py-[4.5px] mb-2 relative">
+                  <label htmlFor="">Status</label>
                   <button
                     className="statusBadge font-medium rounded-lg "
                     onClick={(e) => {
